@@ -129,6 +129,7 @@ tabPanel(value=3,"Distributions",
 	plotOutput("netPlot1"),
 	textOutput("evidences"),
 	textOutput("inference")
+	#plotOutput("inference")
     )
     )
 )

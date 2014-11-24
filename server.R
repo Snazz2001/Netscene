@@ -436,11 +436,11 @@ sliderInput(inputId = "maximumValue",
 			index_to_remove <- -999
 			for(i in 1:length(evi_list)){
   				if(evi_list[[i]]$name==input$EvidenceNode){
-      				index<-i
+      				index_to_remove<-i
   				}
 			}
-			if(index>0){
-  				evi_list[[index]]<<-NULL
+			if(index_to_remove>0){
+  				evi_list[[index_to_remove]]<<-NULL
 			}
 		}
 	#	unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"==",x$value),paste0(x$name,'=',x$value[[1]],'->',x$value[[2]]))))
@@ -493,17 +493,66 @@ sliderInput(inputId = "maximumValue",
 				temp_interest <<- paste0(input$InterestNode,"=='",v,"'")
 				result <- cpquery(cgfit,eval(parse(text=temp_interest)),eval(parse(text=evi_string)))
 				print('output for d node is ',result)
-				paste0("output for D node is ",result)
-				}
-
+				paste0("output for D node is of being ",v, " is around ",round(result,3))
+				}#
 			}else{
 				paste0("")
 			}
 			
-			})
-
+			})#
 		})
 
+
+#	output$inference <- renderPlot({
+#		input$Inference
+#		isolate({
+#			type <- get.node.info(nnodes,input$InterestNode)[['type']]
+#			print(paste0("**********",input$InterestNode))
+#			evi_string <<- ''
+#			print(paste0('doing inference now with type ',type))
+#			if(type == 'c'){
+#				evi_vector <- unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"=='",x$value,"'"),paste(paste0(x$name,'>',x$value[[1]]),paste0(x$name,'<',x$value[[2]]),collapse='&'))))
+#				print('entering c branch!!!')
+#				for(i in 1:length(evi_vector)){
+#					if(str_count(evi_vector[i],' ')==0){
+#						evi_string <- paste0(evi_string,'&',evi_vector[i])
+#					}else{
+#						temp <- str_replace(evi_vector[i],' ','&')
+#						evi_string <- paste0(evi_string,'&',temp)
+#					}
+#				}
+#				evi_string <<- str_sub(evi_string,2)
+#				print(paste0("the evi_string is ",evi_string))
+#				result <- cpdist(cgfit,input$InterestNode,eval(parse(text=evi_string)))
+#				paste0("output is ",round(mean(result[,1]),4), " sd is ",round(sd(result[,1]),4))
+#				plot(density(result[,4]))
+#				abline(v=round(mean(result[,1]),3))
+#			}else if(type == 'd'){
+##				
+#				if(length(evi_list)>0){#to make sure that there is at least one evidence in the list
+#				evi_vector <- unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"=='",x$value,"'"),paste(paste0(x$name,'>',x$value[[1]]),paste0(x$name,'<',x$value[[2]]),collapse='&'))))
+#				print('entering d branch!!!')
+#				for(i in 1:length(evi_vector)){
+#					if(str_count(evi_vector[i],' ')==0){
+#						evi_string <- paste0(evi_string,'&',evi_vector[i])
+#					}else{
+#						temp <- str_replace(evi_vector[i],' ','&')
+#						evi_string <- paste0(evi_string,'&',temp)
+#					}
+#				}
+#				evi_string <<- str_sub(evi_string,2)
+#				v <- get.node.info(nnodes,input$InterestNode)$values[1]
+#				temp_interest <<- paste0(input$InterestNode,"=='",v,"'")
+#				result <- cpquery(cgfit,eval(parse(text=temp_interest)),eval(parse(text=evi_string)))
+#				print('output for d node is ',result)
+#				paste0("output for D node is ",result)
+#				}#
+#			}else{
+#				paste0("")
+#			}
+#			
+#			})#
+#		})
 
 output$selectUI4 <- renderUI({
 #	nodes.name <- get.name(nnodes)
