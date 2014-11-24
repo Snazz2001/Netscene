@@ -178,7 +178,7 @@ set.ccdmodel.string=function(name,pnames,vec='c(1.2,2.3,3.4,3.5)',sd='c(0.3,0.5)
 	conf_str
 }
 
-set.dccmodel.string=function(name,pnames,vec='c(1.2,2.3,3.4,3.5)',sd='c(0.3,0.5)'){
+set.dccmodel.string=function(name,pnames,vec='c(1.2,2.3,3.4,3.5)',sd='c(0.3,0.5)'){###not in use??
 	print('calling set model string 4')
 	model_name_str <- paste0(name,'_model')
 	mat_str <- paste0("list(coef=matrix(",vec,", ncol = 2, dimnames = list(c('(Intercept)','",pnames[2],"'),NULL)),sd=",sd,")")

@@ -56,11 +56,14 @@ navbarPage("GraphRisk",id=TRUE,
             textInput("NewNodeName", label="Name:", value = ""),
 			h5("Parent Node"),
 #			br(),
-	#	uiOutput("selectUI3"),
+			uiOutput("ParentsUI"),
+
 			checkboxGroupInput("ParentNodeList","Parents",choices = node_names,inline = TRUE),###use get.name method to get the names for every nodes in the network,need double check it.
 			radioButtons("ContinuousOrDiscrete","Type",c("Continuous"="c","Binary"="d")),#
-	#		submitButton("CreateNode"),br()
-			actionButton("CreateNode","Create Node"),br()
+#	#		submitButton("CreateNode"),br()
+			actionButton("CreateNode","Create Node"),
+			uiOutput("EnterParam"),
+			actionButton("UpdateNetWork","Update Network")
 	#	textOutput("txt")
 		),
     # Show a plot of the generated distribution

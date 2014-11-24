@@ -43,6 +43,7 @@ maturity_model <- matrix(c(0.7, 0.3), ncol = 2, dimnames = list(NULL, c("YES", "
 DefRate_model <- list(coef = matrix(c(-1.2, 1.1, 2, -2.6), ncol = 2,
                                   dimnames = list(c("(Intercept)", "maturity"), NULL)),
                     sd = c(0.13, 0.36))
+###note for 2 discrete nodes, we need to use 8 parameters(4 can be derived from another four)###
 
 ###wrap node configure into GRNode class, GRNode_d is for discrete node and GRNode_c is for continous node, parents,children here works
 ###as place holder
@@ -270,8 +271,9 @@ net.reactive <- reactive({
   output$netPlot2 <- renderPlot({	
 		#pnloc<-evalq(pn,envir=.GlobalEnv)
 		#nodesloc<-evalq(nodes,envir=.GlobalEnv)
-		print('enter net plot 2 component')
-		input$CreateNode
+		print('enter building net plot 2 component')
+	#	input$CreateNode
+		input$UpdateNetWork
 		isolate({if(input$NewNodeName!=""){
 			##get the input from ui
 			name <- input$NewNodeName
@@ -352,6 +354,32 @@ net.reactive <- reactive({
   		}
   	var.opts
   	})
+
+output$EnterParam <- renderUI({
+	input$CreateNode
+	isolate({
+		if(input$ContinuousOrDiscrete=='c'&&length(input$ParentNodeList)>0){
+			print(paste0('node is c'))
+
+
+
+			}else if(input$ContinuousOrDiscrete=='d'&&length(input$ParentNodeList)>0){
+				print(paste0('node is d'))
+				pnode_spec <- get.parents.info(nnodes,parents)
+				ptypes <- sapply(pnodes_spec,function(x) x$type)
+				if(length(input$ParentNodeList)==2){
+					if(ptypes[1]=='d'&&ptypes[2]=='d'){
+						
+					}
+				}
+
+			}else{
+				print('')
+			}
+		})	
+
+	})
+
 
 output$selectUI1 <- renderUI({
 #	nodes.name <- get.name(nnodes)
