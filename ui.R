@@ -56,8 +56,7 @@ navbarPage("GraphRisk",id=TRUE,
             textInput("NewNodeName", label="Name:", value = ""),
 			h5("Parent Node"),
 #			br(),
-			uiOutput("ParentsUI"),
-
+#			uiOutput("ParentsUI"),
 			checkboxGroupInput("ParentNodeList","Parents",choices = node_names,inline = TRUE),###use get.name method to get the names for every nodes in the network,need double check it.
 			radioButtons("ContinuousOrDiscrete","Type",c("Continuous"="c","Binary"="d")),#
 #	#		submitButton("CreateNode"),br()
