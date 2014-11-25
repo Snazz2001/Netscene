@@ -2,7 +2,7 @@
 #setwd("C:\\Users\\4most\\Dropbox\\Mark Somers\\Denev")
 #runApp("Netscene")
 
-source("C:\\Projects\\BayesianNetwork\\Netscene1110\\Netscene\\server.R")
+source("C:\\Projects\\BayesianNetwork\\Netscene\\server.R")
 require(googleVis)
 require(Rgraphviz)
 require(graph)

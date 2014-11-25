@@ -77,6 +77,7 @@ get.parents.info=function(nnodes,parentlist){
 	#type is the type for new node, either c or d
 	#parentlist is the parents node for the new node, user specify it by name
 print('calling get parents info info method')
+print(paste0('parentlis is ',parentlist))
 	###node has maximum two parents###
 	if(length(parentlist)>2){
 		return(NA)
@@ -193,8 +194,10 @@ set.dddmodel.string=function(name,pnames,vec='c(0.8, 0.2, 0.5, 0.5, 0.1, 0.9, 0.
 	print('calling set model string 5')
 	model_name_str <- paste0(name,'_model')
 	cpt_str <- paste0('array(',vec,",dim=c(2,2,2),dimnames=list(",pnames[1],"=c('HIGH','LOW'),",pnames[2],"=c('HIGH','LOW'),",name,"=c('HIGH','LOW')))")	
+#This can be some issue here	cpt_str <- paste0('array(',vec,",dim=c(2,2,2),dimnames=list(",pnames[1],"=",eval(parse(text=paste0(pnames[1],'_model'))),",",pnames[2],"=",eval(parse(text=paste0(pnames[2],'_model'))),",",name,"=c('HIGH','LOW')))")	
+	print(paste0('in set ddd, the cpt_str is ',cpt_str))	
 	conf_str <- paste(model_name_str,cpt_str,sep='=')
-	print('calling set model string 5')
+	print('done set model string 5')
 	conf_str
 }
 
@@ -202,10 +205,10 @@ set.dddmodel.string=function(name,pnames,vec='c(0.8, 0.2, 0.5, 0.5, 0.1, 0.9, 0.
 #IntGearing = new("GRNode_c",name="IntGearing",model=list(model=IntGearing_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 newnode.class.string=function(name,type){
 	print('calling newnode class string method')
-	if(type=='c'){
-		class_str <- paste0(name,"=new('GRNode_c',name='",name,"',model=list(model=",paste0(name,'_model'),"),values=c('UP','DOWN'),parents=c(NA,NA),children=c(NA,NA))")
+	if(type=='d'){
+		class_str <- paste0(name,"=new('GRNode_d',name='",name,"',model=list(model=",paste0(name,'_model'),"),values=",c('UP','DOWN'),",parents=c(NA,NA),children=c(NA,NA))")
 		}else{
-		class_str <- paste0(name,"=new('GRNode_d',name='",name,"',model=list(model=",paste0(name,'_model'),"),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))")	
+		class_str <- paste0(name,"=new('GRNode_c',name='",name,"',model=list(model=",paste0(name,'_model'),"),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))")	
 		}
 		print('done newnode class string method')
 		class_str

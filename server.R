@@ -1,13 +1,13 @@
 
 require("shiny")
-setwd("C:\\Projects\\BayesianNetwork\\Netscene1110")
+setwd("C:\\Projects\\BayesianNetwork\\Netscene")
 require(bnlearn)
 require(Rgraphviz)
 require(vcd)
 require(ggplot2)
 require(stringr)
 #include the definition of the class nodes
-source("C:\\Projects\\BayesianNetwork\\Netscene1110\\Netscene\\GraphRiskNode_class_z.R")
+source("C:\\Projects\\BayesianNetwork\\Netscene\\GraphRiskNode_class_z.R")
 
 
 namel<-function (vec){
@@ -47,15 +47,18 @@ DefRate_model <- list(coef = matrix(c(-1.2, 1.1, 2, -2.6), ncol = 2,
 
 ###wrap node configure into GRNode class, GRNode_d is for discrete node and GRNode_c is for continous node, parents,children here works
 ###as place holder
-hpi <- new("GRNode_d",name="hpi",model=list(model=hpi_model),values=c("LOW", "HIGH"),parents=c(NA,NA),children=c(NA,NA))
+#hpi <- new("GRNode_d",name="hpi",model=list(model=hpi_model),values=c("LOW", "HIGH"),parents=c(NA,NA),children=c(NA,NA))
+hpi <- new("GRNode_d",name="hpi",model=list(model=hpi_model),values=colnames(hpi_model),parents=c(NA,NA),children=c(NA,NA))
 ltv <- new("GRNode_c",name="ltv",model=list(model=ltv_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 dtv <- new("GRNode_c",name="dtv",model=list(model=dtv_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 vintage <- new("GRNode_c",name="vintage",model=list(model=vintage_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-BoeIR <- new("GRNode_d",name="BoeIR",model=list(model=BoeIR_model),values=c("LOW", "HIGH"),parents=c(NA,NA),children=c(NA,NA))
+#BoeIR <- new("GRNode_d",name="BoeIR",model=list(model=BoeIR_model),values=c("LOW", "HIGH"),parents=c(NA,NA),children=c(NA,NA))
+BoeIR <- new("GRNode_d",name="BoeIR",model=list(model=BoeIR_model),values=colnames(BoeIR_model),parents=c(NA,NA),children=c(NA,NA))
 IntGearing <- new("GRNode_c",name="IntGearing",model=list(model=IntGearing_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 Unemp <- new("GRNode_c",name="Unemp",model=list(model=Unemp_model),values=c(0,1),parents=c(NA,NA),children=c(NA,NA))
 exog <- new("GRNode_c",name="exog",model=list(model=exog_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-maturity <- new("GRNode_d",name="maturity",model=list(model=maturity_model),values=c("YES","NO"),parents=c(NA,NA),children=c(NA,NA))
+#maturity <- new("GRNode_d",name="maturity",model=list(model=maturity_model),values=c("YES","NO"),parents=c(NA,NA),children=c(NA,NA))
+maturity <- new("GRNode_d",name="maturity",model=list(model=maturity_model),values=colnames(maturity_model),parents=c(NA,NA),children=c(NA,NA))
 DefRate <- new("GRNode_c",name="DefRate",model=list(model=DefRate_model),values=c(0,1),parents=c(NA,NA),children=c(NA,NA))
 
 ###How to setup the model structure.
@@ -124,9 +127,10 @@ output$distPlot <- renderPlot({ #renderGvis
 		#y_data <- with(ddd,get(input$ExamineNodeY))
 		plot.obj<<-list()
 		plot.obj$data <<- ddd
-
-		plot.obj$x <<- with(plot.obj$data,get(input$ExamineNodeX))
-		plot.obj$y <<- with(plot.obj$data,get(input$ExamineNodeY))
+		print('*************************')
+		print(head(plot.obj$data))
+		plot.obj$x <<- with(ddd,get(input$ExamineNodeX))
+		plot.obj$y <<- with(ddd,get(input$ExamineNodeY))
 
 		if(x_type=='c' && y_type=='c'){
 		g_data<-data.frame(
@@ -151,6 +155,7 @@ output$distPlot <- renderPlot({ #renderGvis
 		if (input$ChartChoice == "Scatter Plot"){
 			print("inside the scatterplot to see what variables are in ")
 			print(get.name(nnodes))
+			print(paste0('x_type is ',x_type,' y_type is ',y_type))
 			if (x_type=='c' && y_type=='c'){
 				sunflowerplot(g_dat3[,1],g_dat3[,2],g_dat3[,3],main="Scatter Plot",
 				xlab=print(input$ExamineNodeX),ylab=print(input$ExamineNodeY));
@@ -165,7 +170,10 @@ output$distPlot <- renderPlot({ #renderGvis
 				print(paste('flm is ',flm))
 				facet <- paste0(input$ExamineNodeX,'~.')
 				print(paste('00000',flm))
-				print(paste('1111',facet))
+				print(paste('1111',"2222"))
+				print(colnames(plot.obj$data))
+			#	p<-ggplot(ddd,aes(x=zzz,fill=as.factor(BoeIR)))+geom_density(alpha=.75)+xlab('zzz')	
+			#	p<-ggplot(plot.obj$data, aes(x=plot.obj$y))+geom_histogram()
 				p<-ggplot(plot.obj$data,aes(x=plot.obj$y,fill=as.factor(plot.obj$x)))+geom_density(alpha=.75)+xlab(input$ExamineNodeY)				
 			#	p<-ggplot(ddd,aes(eval(parse(text=flm))))+geom_histogram()+xlab(input$ExamineNodeY)+facet_grid(eval(parse(text=facet)))
 			#	p <- ggplot(ddd, aes(x=y_data,fill=x_data)) + geom_histogram() + xlab(input$ExamineNodeY) 
@@ -177,7 +185,8 @@ output$distPlot <- renderPlot({ #renderGvis
 				facet <- paste0(input$ExamineNodeY,'~.')
 				print(paste('2222',flm))
 				print(paste('3333',facet))
-				p<-ggplot(plot.obj$data,aes(x=plot.obj$x,fill=as.factor(plot.obj$y)))+geom_density(alpha=.75)+xlab(input$ExamineNodeY)			
+			#	p<-ggplot(plot.obj$data, aes(x=plot.obj$x))+geom_histogram()
+				p<-ggplot(plot.obj$data,aes(x=plot.obj$x,fill=as.factor(plot.obj$y)))+geom_density(alpha=.75)+xlab(input$ExamineNodeX)			
 			#	p<-ggplot(ddd,aes(eval(parse(text=flm))))+geom_histogram()+xlab(input$ExamineNodeX)+facet_grid(eval(parse(text=facet)))
 			#	p <- ggplot(ddd, aes(x=x_data,fill=y_data)) + geom_histogram() + xlab(input$ExamineNodeX) 		
 				print(p)
@@ -360,19 +369,39 @@ output$EnterParam <- renderUI({
 	isolate({
 		if(input$ContinuousOrDiscrete=='c'&&length(input$ParentNodeList)>0){
 			print(paste0('node is c'))
-
-
-
+			print(paste0('parentlist is ',input$ParentNodeList))
+			pnodes_spec <- get.parents.info(nnodes,input$ParentNodeList)
+			ptypes <- sapply(pnodes_spec,function(x) x$type)
+			textInput("text", label = h3("Text input"), value = "Enter text...") 
+			if(length(input$ParentNodeList)==2){
+					if(ptypes[1]=='c'&&ptypes[2]=='c'){
+						textInput('text', label = 'Please input 3 parameter separated by comma:', value = '') 
+					}else if(ptypes[1]=='c'&&ptypes[2]=='d'){
+						textInput('text', label = 'Please input 6 parameter separated by comma:', value = '') 
+					}else if(ptypes[1]=='d'&&ptypes[2]=='c'){
+						textInput('text', label = 'Please input 6 parameter separated by comma:', value = '') 
+					}
+			}else if(length(input$ParentNodeList)==1){
+				if(ptypes[1]=='c'){
+						textInput('text', label = 'Please input 2 parameter separated by comma:', value = '') 
+				}else if(ptypes[1]=='d'){
+						textInput('text', label = 'Please input 4 parameter separated by comma:', value = '') 
+				}
+			}
 			}else if(input$ContinuousOrDiscrete=='d'&&length(input$ParentNodeList)>0){
 				print(paste0('node is d'))
-				pnode_spec <- get.parents.info(nnodes,parents)
+				print(paste0('parentlist is ',input$ParentNodeList))
+				pnodes_spec <- get.parents.info(nnodes,input$ParentNodeList)
 				ptypes <- sapply(pnodes_spec,function(x) x$type)
 				if(length(input$ParentNodeList)==2){
 					if(ptypes[1]=='d'&&ptypes[2]=='d'){
-						
+						textInput('text', label = 'Please input 4 parameter separated by comma:', value = '') 
+					}
+				}else if(length(input$ParentNodeList)==1){
+					if(ptypes[1]=='d'){
+						textInput('text', label = 'Please input 2 parameter separated by comma:', value = '') 
 					}
 				}
-
 			}else{
 				print('')
 			}
