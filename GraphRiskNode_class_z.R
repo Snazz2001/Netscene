@@ -115,7 +115,7 @@ print('calling get construct.networkstring method')
 }
 
 ###set up the conf string for
-conf.new.node=function(name,type,nodes_spec){##need to provide the new model conf, use default setting now.
+conf.new.node=function(name,type,nodes_spec,weights=c()){##need to provide the new model conf, use default setting now.
 	###extract the parents info
 	#nodes_spec is the info for parents node
 	print('calling conf.new.node method')
@@ -126,7 +126,7 @@ conf.new.node=function(name,type,nodes_spec){##need to provide the new model con
 	###if new node type is c### 
 	if(type=='c'){
 		if(ptypes[1]=='c'&&ptypes[2]=='c'){
-			conf_str <- set.cccmodel.string(name,pnames)		
+			conf_str <- set.cccmodel.string(name,pnames,Intercept=weights[3],weight1=weights[1],weight2=weights[2])		
 			}else if(ptypes[1]=='c'&&ptypes[2]=='d'){
 				conf_str <- set.ccdmodel.string(name,pnames)
 				}else if(ptypes[1]=='d'&&ptypes[2]=='c'){
@@ -193,7 +193,7 @@ set.dccmodel.string=function(name,pnames,vec='c(1.2,2.3,3.4,3.5)',sd='c(0.3,0.5)
 set.dddmodel.string=function(name,pnames,vec='c(0.8, 0.2, 0.5, 0.5, 0.1, 0.9, 0.7, 0.3)'){
 	print('calling set model string 5')
 	model_name_str <- paste0(name,'_model')
-	cpt_str <- paste0('array(',vec,",dim=c(2,2,2),dimnames=list(",pnames[1],"=c('HIGH','LOW'),",pnames[2],"=c('HIGH','LOW'),",name,"=c('HIGH','LOW')))")	
+	cpt_str <- paste0('array(',vec,",dim=c(2,2,2),dimnames=list(",pnames[1],"=c('LOW','HIGH'),",pnames[2],"=c('LOW','HIGH'),",name,"=c('LOW','HIGH')))")	
 #This can be some issue here	cpt_str <- paste0('array(',vec,",dim=c(2,2,2),dimnames=list(",pnames[1],"=",eval(parse(text=paste0(pnames[1],'_model'))),",",pnames[2],"=",eval(parse(text=paste0(pnames[2],'_model'))),",",name,"=c('HIGH','LOW')))")	
 	print(paste0('in set ddd, the cpt_str is ',cpt_str))	
 	conf_str <- paste(model_name_str,cpt_str,sep='=')
@@ -206,7 +206,7 @@ set.dddmodel.string=function(name,pnames,vec='c(0.8, 0.2, 0.5, 0.5, 0.1, 0.9, 0.
 newnode.class.string=function(name,type){
 	print('calling newnode class string method')
 	if(type=='d'){
-		class_str <- paste0(name,"=new('GRNode_d',name='",name,"',model=list(model=",paste0(name,'_model'),"),values=",c('UP','DOWN'),",parents=c(NA,NA),children=c(NA,NA))")
+		class_str <- paste0(name,"=new('GRNode_d',name='",name,"',model=list(model=",paste0(name,'_model'),"),values=",c('LOW','HIGH'),",parents=c(NA,NA),children=c(NA,NA))")
 		}else{
 		class_str <- paste0(name,"=new('GRNode_c',name='",name,"',model=list(model=",paste0(name,'_model'),"),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))")	
 		}

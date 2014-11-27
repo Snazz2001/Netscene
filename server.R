@@ -39,7 +39,7 @@ IntGearing_model <- list(coef = matrix(c(-1.2, 1.1, 2, 2.6), ncol = 2,
                 sd = c(0.13, 0.36))
 Unemp_model <- list(coef=c("(Intercept)"=0.5),sd=0.3)
 exog_model <- list(coef=c("(Intercept)"=3,"Unemp"=1.6,"IntGearing"=-0.6),sd=1.5)
-maturity_model <- matrix(c(0.7, 0.3), ncol = 2, dimnames = list(NULL, c("YES", "NO")))
+maturity_model <- matrix(c(0.7, 0.3), ncol = 2, dimnames = list(NULL, c("LOW", "HIGH")))
 DefRate_model <- list(coef = matrix(c(-1.2, 1.1, 2, -2.6), ncol = 2,
                                   dimnames = list(c("(Intercept)", "maturity"), NULL)),
                     sd = c(0.13, 0.36))
@@ -292,14 +292,39 @@ net.reactive <- reactive({
 			print(paste('the name is ',name))
 			##get the parent information
 			pnode_spec <- get.parents.info(nnodes,parents)
+			ptypes <- sapply(pnode_spec,function(x) x$type)
 
 			##update the network string and compile network
 			networkstring <<- construct.networkstring(name,pnode_spec,networkstring)
 			print(paste('network string is ',networkstring))
 			net <<- model2network(networkstring)
 
+			##setup the weights used for manually input based on the combination of node type###
+			if(type=='c'){
+				if(length(ptypes)==2){
+					if(ptypes[1]=='c'&&ptypes[2]=='c'){
+						weights <- c(input$weight1,input$weight2,input$weight3)
+					}else if(ptypes[1]=='c'&&ptypes[2]=='d'){
+						weights <- c(input$weight1,input$weight2,input$weight3,input$weight4,input$weight5,input$weight6)
+					}else if(ptypes[1]=='d'&&ptypes[2]=='c'){
+						weights <- c(input$weight1,input$weight2,input$weight3,input$weight4,input$weight5,input$weight6)						
+					}
+				}else if(length(ptypes)==1){
+
+				}
+			}
+
+
+			if(!is.null(input$weight3)){
+			weights <- c(input$weight1,input$weight2,input$weight3)
+			}else {
+			weights <- c()
+			}
+
+
+
 			##set up the new node configure
-			conf_str <- conf.new.node(name,type,pnode_spec)
+			conf_str <- conf.new.node(name,type,pnode_spec,weights)
 			print(paste('conf str is ',conf_str))
 			if(conf_str!=''){
 				eval(parse(text=conf_str))
@@ -372,20 +397,38 @@ output$EnterParam <- renderUI({
 			print(paste0('parentlist is ',input$ParentNodeList))
 			pnodes_spec <- get.parents.info(nnodes,input$ParentNodeList)
 			ptypes <- sapply(pnodes_spec,function(x) x$type)
+			pnames <- sapply(pnodes_spec,function(x) x$name)
+			pvalues <- sapply(pnodes_spec,function(x) x$values)
 			textInput("text", label = h3("Text input"), value = "Enter text...") 
 			if(length(input$ParentNodeList)==2){
 					if(ptypes[1]=='c'&&ptypes[2]=='c'){
-						textInput('text', label = 'Please input 3 parameter separated by comma:', value = '') 
+						c(numericInput('weight1', label = paste0('Weight for ',pnames[1]),value = ''),
+						numericInput('weight2', label = paste0('Weight for ',pnames[2]), value = ''),
+						numericInput('weight3', label = 'Standard deviation ', value = ''))
 					}else if(ptypes[1]=='c'&&ptypes[2]=='d'){
-						textInput('text', label = 'Please input 6 parameter separated by comma:', value = '') 
+						c(numericInput('weight1', label = paste0('Weight for Intercept under LOW ',pnames[2]), value = ''),
+						numericInput('weight2', label = paste0('Weight for ',pnames[1],' under LOW ',pnames[2]) , value = ''),
+						numericInput('weight3', label =  paste0('Weight for Intercept under High ',pnames[2]), value = ''),
+						numericInput('weight4', label =  paste0('Weight for ',pnames[1],' under HIGH ',pnames[2]), value = ''),
+						numericInput('weight5', label =  paste0('Weight for Standard deviation under LOW ',pnames[2]), value = ''),
+						numericInput('weight6', label =  paste0('Weight for  Standard deviation under HIGH ',pnames[2]), value = ''))
 					}else if(ptypes[1]=='d'&&ptypes[2]=='c'){
-						textInput('text', label = 'Please input 6 parameter separated by comma:', value = '') 
+						c(numericInput('weight1', label = paste0('Weight for Intercept under LOW ',pnames[1]), value = ''),
+						numericInput('weight2', label = paste0('Weight for ',pnames[2],' under LOW ',pnames[1]) , value = ''),
+						numericInput('weight3', label =  paste0('Weight for Intercept under High ',pnames[1]), value = ''),
+						numericInput('weight4', label =  paste0('Weight for ',pnames[2],' under HIGH ',pnames[1]), value = ''),
+						numericInput('weight5', label =  paste0('Weight for Standard deviation under LOW ',pnames[1]), value = ''),
+						numericInput('weight6', label =  paste0('Weight for Standard deviation under HIGH ',pnames[1]), value = ''))
 					}
 			}else if(length(input$ParentNodeList)==1){
 				if(ptypes[1]=='c'){
-						textInput('text', label = 'Please input 2 parameter separated by comma:', value = '') 
+						c(numericInput('weight1', label = 'Weight for Interception ', value = ''),
+						numericInput('weight2', label = paste0('Weight for ',pnames[1]), value = ''))
 				}else if(ptypes[1]=='d'){
-						textInput('text', label = 'Please input 4 parameter separated by comma:', value = '') 
+						c(numericInput('weight1', label = paste0('Weight for LOW ',pnames[1]), value = ''),
+						numericInput('weight2', label = paste0('Weight for HIGH ',pnames[1]), value = ''),
+						numericInput('weight3', label = paste0('Standard deviation for LOW ',pnames[1]), value = ''),
+						numericInput('weight4', label = paste0('Standard deviation for HIGH ',pnames[1]), value = ''))
 				}
 			}
 			}else if(input$ContinuousOrDiscrete=='d'&&length(input$ParentNodeList)>0){
@@ -395,11 +438,20 @@ output$EnterParam <- renderUI({
 				ptypes <- sapply(pnodes_spec,function(x) x$type)
 				if(length(input$ParentNodeList)==2){
 					if(ptypes[1]=='d'&&ptypes[2]=='d'){
-						textInput('text', label = 'Please input 4 parameter separated by comma:', value = '') 
+					  c(numericInput('weight1', label = paste0('Probability for LOW', input$NewNodeName, ' LOW ', pnames[1], ' and LOW ',pnames[2]), value = ''),
+						numericInput('weight2', label =  paste0('Probability for HIGH', input$NewNodeName, ' LOW ', pnames[1], ' and LOW ',pnames[2]), value = ''),
+						numericInput('weight3', label = paste0('Probability for LOW', input$NewNodeName, ' HIGH ', pnames[1], ' and LOW ',pnames[2]), value = ''),
+						numericInput('weight4', label = paste0('Probability for HIGH', input$NewNodeName, ' HIGH ', pnames[1], ' and LOW ',pnames[2]), value = ''),
+						numericInput('weight5', label = paste0('Probability for LOW', input$NewNodeName, ' LOW ', pnames[1], ' and HIGH ',pnames[2]), value = ''),
+						numericInput('weight6', label =  paste0('Probability for HIGH', input$NewNodeName, ' LOW ', pnames[1], ' and HIGH ',pnames[2]), value = ''),
+						numericInput('weight7', label = paste0('Probability for LOW', input$NewNodeName, ' HIGH ', pnames[1], ' and HIGH ',pnames[2]), value = ''),
+						numericInput('weight8', label = paste0('Probability for HIGH', input$NewNodeName, ' HIGH ', pnames[1], ' and HIGH ',pnames[2]), value = ''),
+						)
 					}
 				}else if(length(input$ParentNodeList)==1){
 					if(ptypes[1]=='d'){
-						textInput('text', label = 'Please input 2 parameter separated by comma:', value = '') 
+						c(numericInput('weight1', label = paste0('Probability for LOW ',pnames[1]) , value = ''),
+						numericInput('weight2', label = paste0('Probability for HIGH ',pnames[2]), value = ''))
 					}
 				}
 			}else{
