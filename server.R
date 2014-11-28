@@ -277,13 +277,13 @@ net.reactive <- reactive({
 
 
 #Build Network
-  output$netPlot2 <- renderPlot({	
+ output$netPlot2 <- renderPlot({	
 		#pnloc<-evalq(pn,envir=.GlobalEnv)
 		#nodesloc<-evalq(nodes,envir=.GlobalEnv)
 		print('enter building net plot 2 component')
 	#	input$CreateNode
 		input$UpdateNetWork
-		isolate({if(input$NewNodeName!=""){
+		isolate({if(input$NewNodeName!=""&&!is.null(input$weight1)&&!is.na(input$weight1)){
 			##get the input from ui
 			name <- input$NewNodeName
 			parents <- input$ParentNodeList
@@ -292,35 +292,41 @@ net.reactive <- reactive({
 			print(paste('the name is ',name))
 			##get the parent information
 			pnode_spec <- get.parents.info(nnodes,parents)
-			ptypes <- sapply(pnode_spec,function(x) x$type)
-
+			ptypes <- sapply(pnode_spec,function(x) x$type)#
 			##update the network string and compile network
 			networkstring <<- construct.networkstring(name,pnode_spec,networkstring)
 			print(paste('network string is ',networkstring))
-			net <<- model2network(networkstring)
-
+			net <<- model2network(networkstring)#
 			##setup the weights used for manually input based on the combination of node type###
 			if(type=='c'){
 				if(length(ptypes)==2){
 					if(ptypes[1]=='c'&&ptypes[2]=='c'){
-						weights <- c(input$weight1,input$weight2,input$weight3)
+						weights <- c(input$weight1,input$weight2,input$weight3,input$weight4)
 					}else if(ptypes[1]=='c'&&ptypes[2]=='d'){
 						weights <- c(input$weight1,input$weight2,input$weight3,input$weight4,input$weight5,input$weight6)
 					}else if(ptypes[1]=='d'&&ptypes[2]=='c'){
 						weights <- c(input$weight1,input$weight2,input$weight3,input$weight4,input$weight5,input$weight6)						
 					}
 				}else if(length(ptypes)==1){
-
+					if(ptypes[1]=='c'){
+						weights <- c(input$weight1,input$weight2)
+					}else if(ptypes[1]=='d'){
+						weights <- c(input$weight1,input$weight2,input$weight3,input$weight4)
+					}
 				}
-			}
+			}else if(type=='d'){
+				if(length(ptypes)==2){
+					weights <- c(input$weight1,input$weight2,input$weight3,input$weight4,input$weight5,input$weight6,input$weight7,input$weight8)
+				}else if(length(ptypes)==1){
+					weights <- c(input$weight1,input$weight2)
+				}
+			}#
 
-
-			if(!is.null(input$weight3)){
-			weights <- c(input$weight1,input$weight2,input$weight3)
-			}else {
-			weights <- c()
-			}
-
+#			if(!is.null(input$weight3)){
+#			weights <- c(input$weight1,input$weight2,input$weight3)
+#			}else {
+#			weights <- c()
+#			}#
 
 
 			##set up the new node configure
@@ -345,41 +351,11 @@ net.reactive <- reactive({
 				cgfit <<- fit.net.z(nnodes,net)
 				ddd<<-rbn(cgfit,n=2000)
 				print('done fit network!!!')
-			}
-
-#			par2<-sapply(c("",parents),c,"+")
-#			par3<-paste(par2[1:length(par2)-1],collapse="")
-#			#
-
-#			# Create the new node, and append it to the list, all nodes assumed to have 2 levels!
-#			eval(parse(text=paste(
-#			input$NewNodeName,"<<-new('GRNode',continuous_outcome=1,mean=1,sd=0.5,notes='a',cptable(~",input$NewNodeName,par3,",values=rep(1,2^(1+length(parents)) ), levels=yn));",
-#			"nodesloc<-c(nodesloc,list(",input$NewNodeName,"))")))#
-
-#			print(paste(
-#			input$NewNodeName,"<<-new('GRNode',continuous_outcome=1,mean=1,sd=0.5,notes='a',cptable(~",input$NewNodeName,par3,",values=rep(1,2^(1+length(parents)) ), levels=yn));",
-#			"nodesloc<-c(nodesloc,list(",input$NewNodeName,"))"))#
-
-#			# print(nodesloc)#
-
-#			plistloc <- compileCPT(lapply(nodesloc,as,"cptable"))
-#			
-#			print("got here 5")#
-
-#			pnloc  <- grain(plistloc)
-#			pncloc <- compile(pnloc, propagate=TRUE)
-#			dddloc<-simulate2(pncloc,n=1000)#
-
-#			assign("nodes",nodesloc,.GlobalEnv) 
-#			assign("ddd",dddloc,.GlobalEnv) 
-#			assign("pnc",pncloc,.GlobalEnv)  
-#			assign("pn",pnloc,.GlobalEnv)  
-#			assign("plist",plistloc,.GlobalEnv)         			
+			}     			
 		}
 		graphviz.plot(net)})
 		print("Render Build Plot") 	
   })
-
 
   get.name.reactive<-reactive({
   	var.opts <- namel(colnames(ddd))
@@ -400,11 +376,13 @@ output$EnterParam <- renderUI({
 			pnames <- sapply(pnodes_spec,function(x) x$name)
 			pvalues <- sapply(pnodes_spec,function(x) x$values)
 			textInput("text", label = h3("Text input"), value = "Enter text...") 
+			isStarted <- FALSE
 			if(length(input$ParentNodeList)==2){
 					if(ptypes[1]=='c'&&ptypes[2]=='c'){
-						c(numericInput('weight1', label = paste0('Weight for ',pnames[1]),value = ''),
-						numericInput('weight2', label = paste0('Weight for ',pnames[2]), value = ''),
-						numericInput('weight3', label = 'Standard deviation ', value = ''))
+						c(numericInput('weight1', label = paste0('Weight for Intercept ',pnames[1]),value = ''),
+							numericInput('weight2', label = paste0('Weight for ',pnames[1]),value = ''),
+						numericInput('weight3', label = paste0('Weight for ',pnames[2]), value = ''),
+						numericInput('weight4', label = 'Standard deviation ', value = ''))
 					}else if(ptypes[1]=='c'&&ptypes[2]=='d'){
 						c(numericInput('weight1', label = paste0('Weight for Intercept under LOW ',pnames[2]), value = ''),
 						numericInput('weight2', label = paste0('Weight for ',pnames[1],' under LOW ',pnames[2]) , value = ''),
@@ -436,16 +414,19 @@ output$EnterParam <- renderUI({
 				print(paste0('parentlist is ',input$ParentNodeList))
 				pnodes_spec <- get.parents.info(nnodes,input$ParentNodeList)
 				ptypes <- sapply(pnodes_spec,function(x) x$type)
+				pnames <- sapply(pnodes_spec,function(x) x$name)
+				pvalues <- sapply(pnodes_spec,function(x) x$values)
+
 				if(length(input$ParentNodeList)==2){
 					if(ptypes[1]=='d'&&ptypes[2]=='d'){
-					  c(numericInput('weight1', label = paste0('Probability for LOW', input$NewNodeName, ' LOW ', pnames[1], ' and LOW ',pnames[2]), value = ''),
-						numericInput('weight2', label =  paste0('Probability for HIGH', input$NewNodeName, ' LOW ', pnames[1], ' and LOW ',pnames[2]), value = ''),
-						numericInput('weight3', label = paste0('Probability for LOW', input$NewNodeName, ' HIGH ', pnames[1], ' and LOW ',pnames[2]), value = ''),
-						numericInput('weight4', label = paste0('Probability for HIGH', input$NewNodeName, ' HIGH ', pnames[1], ' and LOW ',pnames[2]), value = ''),
-						numericInput('weight5', label = paste0('Probability for LOW', input$NewNodeName, ' LOW ', pnames[1], ' and HIGH ',pnames[2]), value = ''),
-						numericInput('weight6', label =  paste0('Probability for HIGH', input$NewNodeName, ' LOW ', pnames[1], ' and HIGH ',pnames[2]), value = ''),
-						numericInput('weight7', label = paste0('Probability for LOW', input$NewNodeName, ' HIGH ', pnames[1], ' and HIGH ',pnames[2]), value = ''),
-						numericInput('weight8', label = paste0('Probability for HIGH', input$NewNodeName, ' HIGH ', pnames[1], ' and HIGH ',pnames[2]), value = ''),
+					  c(numericInput('weight1', label = paste0('Probability for LOW ', input$NewNodeName, ' LOW ', pnames[1], ' and LOW ',pnames[2]), value = ''),
+						numericInput('weight2', label = paste0('Probability for HIGH ', input$NewNodeName, ' LOW ', pnames[1], ' and LOW ',pnames[2]), value = ''),
+						numericInput('weight3', label = paste0('Probability for LOW ', input$NewNodeName, ' HIGH ', pnames[1], ' and LOW ',pnames[2]), value = ''),
+						numericInput('weight4', label = paste0('Probability for HIGH ', input$NewNodeName, ' HIGH ', pnames[1], ' and LOW ',pnames[2]), value = ''),
+						numericInput('weight5', label = paste0('Probability for LOW ', input$NewNodeName, ' LOW ', pnames[1], ' and HIGH ',pnames[2]), value = ''),
+						numericInput('weight6', label = paste0('Probability for HIGH ', input$NewNodeName, ' LOW ', pnames[1], ' and HIGH ',pnames[2]), value = ''),
+						numericInput('weight7', label = paste0('Probability for LOW ', input$NewNodeName, ' HIGH ', pnames[1], ' and HIGH ',pnames[2]), value = ''),
+						numericInput('weight8', label = paste0('Probability for HIGH ', input$NewNodeName, ' HIGH ', pnames[1], ' and HIGH ',pnames[2]), value = '')
 						)
 					}
 				}else if(length(input$ParentNodeList)==1){

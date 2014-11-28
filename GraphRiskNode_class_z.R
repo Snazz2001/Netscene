@@ -122,25 +122,33 @@ conf.new.node=function(name,type,nodes_spec,weights=c()){##need to provide the n
 	pnames <- sapply(nodes_spec,function(x) x$name)
 	ptypes <- sapply(nodes_spec,function(x) x$type)
 	pvalues <- sapply(nodes_spec,function(x) x$values)
-
+	print(paste0('in conf new node function, the weights are ',weights))
 	###if new node type is c### 
 	if(type=='c'){
-		if(ptypes[1]=='c'&&ptypes[2]=='c'){
-			conf_str <- set.cccmodel.string(name,pnames,Intercept=weights[3],weight1=weights[1],weight2=weights[2])		
-			}else if(ptypes[1]=='c'&&ptypes[2]=='d'){
-				conf_str <- set.ccdmodel.string(name,pnames)
-				}else if(ptypes[1]=='d'&&ptypes[2]=='c'){
-					conf_str <- set.cdcmodel.string(name,pnames)
-				}else{
-					conf_str <- ''
-				}
+		if(length(ptypes)==2){
+			if(ptypes[1]=='c'&&ptypes[2]=='c'){
+				conf_str <- set.cccmodel.string(name,pnames,vec=weights)		
+				}else if(ptypes[1]=='c'&&ptypes[2]=='d'){
+					conf_str <- set.ccdmodel.string(name,pnames,vec=weights[1:4],sd=weights[5:6])
+					}else if(ptypes[1]=='d'&&ptypes[2]=='c'){
+						conf_str <- set.cdcmodel.string(name,pnames,vec=weights[1:4],sd=weights[5:6])
+					}else{
+						conf_str <- ''
+					}
+		}else if(length(ptypes)==1){
+			###Need add new function for 1 parent
+		}
 
 	}else{
+		if(length(ptypes)==2){
 		if(ptypes[1]=='d'&&ptypes[2]=='d'){
-			conf_str <- set.dddmodel.string(name,pnames)
+			conf_str <- set.dddmodel.string(name,pnames,vec=weights)
 			}else{
 				###it is not valid configuration###
 				conf_str <- ''
+			}
+			}else if(length(ptypes)==1){
+				###need add new function for 1 parent
 			}
 	}
 	print('done with conf.new.node method')
@@ -148,11 +156,12 @@ conf.new.node=function(name,type,nodes_spec,weights=c()){##need to provide the n
 }
 
 ###
-set.cccmodel.string=function(name,pnames,Intercept=3,weight1=1,weight2=-1,sd=1.5){
+set.cccmodel.string=function(name,pnames,vec=c(3,1,-1,1.5)){
 	print('calling set model string 1')
 	model_name_str <- paste0(name,'_model')
-	weight_str <- paste(paste0("'(Intercept)'=",Intercept),paste0("'",pnames[1],"'=",weight1),paste0("'",pnames[2],"'=",weight2),sep=',')
-	list_str <- paste(paste0('list(coef=c(',weight_str,')'),paste0('sd=',sd),sep=',')
+	weight_str <- paste(paste0("'(Intercept)'=",vec[1]),paste0("'",pnames[1],"'=",vec[2]),paste0("'",pnames[2],"'=",vec[3]),sep=',')
+	list_str <- paste(paste0('list(coef=c(',weight_str,')'),paste0('sd=',vec[4]),sep=',')
+	print(paste0('in set ccc, the mat_list_str is ',list_str))
 	conf_str <- paste(model_name_str,paste0(list_str,')'),sep='=')
 	print('done set model string 1')
 	conf_str
@@ -161,28 +170,37 @@ set.cccmodel.string=function(name,pnames,Intercept=3,weight1=1,weight2=-1,sd=1.5
 #dtv_model = list(coef = matrix(c(1.2, 2.3, 3.4, 4.5), ncol = 2,
 #                              dimnames = list(c("(Intercept)", "ltv"), NULL)),
 #                sd = c(0.3, 0.6))
-set.cdcmodel.string=function(name,pnames,vec='c(1.2,2.3,3.4,3.5)',sd='c(0.3,0.5)'){
+set.cdcmodel.string=function(name,pnames,vec=c(1.2,2.3,3.4,3.5),sd=c(0.3,0.5)){
 	print('calling set model string 2')
 	model_name_str <- paste0(name,'_model')
-	mat_str <- paste0("list(coef=matrix(",vec,", ncol = 2, dimnames = list(c('(Intercept)','",pnames[1],"'),NULL)),sd=",sd,")")
+	vec_str <- paste0('c(',paste(vec,collapse=','),')')
+	sd_str <- paste0('c(',paste(sd,collapse=','),')')
+	mat_str <- paste0("list(coef=matrix(",vec_str,", ncol = 2, dimnames = list(c('(Intercept)','",pnames[1],"'),NULL)),sd=",sd_str,")")
+	print(paste0('in set cdc, the mat_str is ',mat_str))
 	conf_str <- paste(model_name_str,mat_str,sep='=')
 	print('done set model string 2')
 	conf_str
 }
 
-set.ccdmodel.string=function(name,pnames,vec='c(1.2,2.3,3.4,3.5)',sd='c(0.3,0.5)'){
+set.ccdmodel.string=function(name,pnames,vec=c(1.2,2.3,3.4,3.5),sd=c(0.3,0.5)){
 	print('calling set model string 3')
 	model_name_str <- paste0(name,'_model')
-	mat_str <- paste0("list(coef=matrix(",vec,", ncol = 2, dimnames = list(c('(Intercept)','",pnames[2],"'),NULL)),sd=",sd,")")
+	vec_str <- paste0('c(',paste(vec,collapse=','),')')
+	sd_str <- paste0('c(',paste(sd,collapse=','),')')
+	mat_str <- paste0("list(coef=matrix(",vec_str,", ncol = 2, dimnames = list(c('(Intercept)','",pnames[2],"'),NULL)),sd=",sd_str,")")
+	print(paste0('in set ccd, the mat_str is ',mat_str))
 	conf_str <- paste(model_name_str,mat_str,sep='=')
 	print('done set model string 3')
 	conf_str
 }
 
-set.dccmodel.string=function(name,pnames,vec='c(1.2,2.3,3.4,3.5)',sd='c(0.3,0.5)'){###not in use??
+set.dccmodel.string=function(name,pnames,vec=c(1.2,2.3,3.4,3.5),sd=c(0.3,0.5)){###not in use??
 	print('calling set model string 4')
 	model_name_str <- paste0(name,'_model')
-	mat_str <- paste0("list(coef=matrix(",vec,", ncol = 2, dimnames = list(c('(Intercept)','",pnames[2],"'),NULL)),sd=",sd,")")
+	vec_str <- paste0('c(',paste(vec,collapse=','),')')
+	sd_str <- paste0('c(',paste(sd,collapse=','),')')
+	mat_str <- paste0("list(coef=matrix(",vec_str,", ncol = 2, dimnames = list(c('(Intercept)','",pnames[2],"'),NULL)),sd=",sd_str,")")
+	print(paste0('in set dcc, the mat_str is ',mat_str))	
 	conf_str <- paste(model_name_str,mat_str,sep='=')
 	print('done set model string 4')
 	conf_str
@@ -190,10 +208,11 @@ set.dccmodel.string=function(name,pnames,vec='c(1.2,2.3,3.4,3.5)',sd='c(0.3,0.5)
 
 #cptT <- matrix(c(0.05, 0.95, 0.01, 0.99), 
 #               ncol=2, dimnames=list("T"=yn, "A"=yn))
-set.dddmodel.string=function(name,pnames,vec='c(0.8, 0.2, 0.5, 0.5, 0.1, 0.9, 0.7, 0.3)'){
+set.dddmodel.string=function(name,pnames,vec=c(0.8, 0.2, 0.5, 0.5, 0.1, 0.9, 0.7, 0.3)){
 	print('calling set model string 5')
 	model_name_str <- paste0(name,'_model')
-	cpt_str <- paste0('array(',vec,",dim=c(2,2,2),dimnames=list(",pnames[1],"=c('LOW','HIGH'),",pnames[2],"=c('LOW','HIGH'),",name,"=c('LOW','HIGH')))")	
+	vec_str <- paste0('c(',paste(vec,collapse=','),')')	
+	cpt_str <- paste0('array(',vec_str,",dim=c(2,2,2),dimnames=list(",pnames[1],"=c('LOW','HIGH'),",pnames[2],"=c('LOW','HIGH'),",name,"=c('LOW','HIGH')))")	
 #This can be some issue here	cpt_str <- paste0('array(',vec,",dim=c(2,2,2),dimnames=list(",pnames[1],"=",eval(parse(text=paste0(pnames[1],'_model'))),",",pnames[2],"=",eval(parse(text=paste0(pnames[2],'_model'))),",",name,"=c('HIGH','LOW')))")	
 	print(paste0('in set ddd, the cpt_str is ',cpt_str))	
 	conf_str <- paste(model_name_str,cpt_str,sep='=')
