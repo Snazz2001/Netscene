@@ -137,6 +137,12 @@ conf.new.node=function(name,type,nodes_spec,weights=c()){##need to provide the n
 					}
 		}else if(length(ptypes)==1){
 			###Need add new function for 1 parent
+			if(ptypes=='c'){
+				conf_str <- set.ccmodel.string(name,pnames,vec=weights)
+			}else {
+				conf_str <- set.cdmodel.string(name,pnames,vec=weights)
+			}
+
 		}
 
 	}else{
@@ -149,20 +155,55 @@ conf.new.node=function(name,type,nodes_spec,weights=c()){##need to provide the n
 			}
 			}else if(length(ptypes)==1){
 				###need add new function for 1 parent
+				if(ptypes=='d'){
+					conf_str <- set.ddmodel.string(name,pnames,vec=weights)
+				}
 			}
 	}
 	print('done with conf.new.node method')
 	conf_str
 }
 
+
+set.cdmodel.string = function(name,pnames,vec=c(1.1,2.2,1,1)){
+	print('calling set cd model ')
+	model_name_str <- paste0(name,'_model')
+	vec_str <- paste0('c(',paste(vec[1:2],collapse=','),')')
+	sd_str <- paste0('c(',paste(vec[3:4],collapse=','),')')
+	list_str <- paste0("list(coef=matrix(",vec_str,", ncol = 2, dimnames = list(c('(Intercept)'),",pnames,"=c('LOW','HIGH'))),sd=",sd_str,")")
+	print('done setting cd model')
+	conf_str <- paste(model_name_str,list_str,sep='=')
+}
+
+
+##list(coef=c("(Intercept)"=3,"ltv"=1.6),sd=1.5)
+set.ccmodel.string = function(name,pnames,vec=c(1,1.5,2)) {
+	print('calling set cc model')
+	model_name_str <- paste0(name,'_model')
+	weight_str <- paste0("'(Intercept)'=",vec[1],",'",pnames,"'=",vec[2])
+	list_str <- paste(paste0('list(coef=c(',weight_str,')'),paste0('sd=',vec[3],")"),sep=',')
+	print('done set cc model')
+	conf_str <- paste(model_name_str,list_str,sep='=')
+}
+
+set.ddmodel.string=function(name,pnames,vec=c(0.2,0.8,0.6,0.4)){
+	print('calling set dd model')
+	model_name_str <- paste0(name,'_model')
+	vec_str <- paste0('c(',paste(vec,collapse=','),')')
+	mat_str <- paste0("matrix(",vec_str,", ncol = 2, dimnames = list(",pnames,"=c('LOW','HIGH'),",name,"=c('LOW','HIGH')))")
+	print('done setting dd model')	
+	conf_str <- paste(model_name_str,mat_str,sep='=')
+}
+
+
 ###
 set.cccmodel.string=function(name,pnames,vec=c(3,1,-1,1.5)){
 	print('calling set model string 1')
 	model_name_str <- paste0(name,'_model')
 	weight_str <- paste(paste0("'(Intercept)'=",vec[1]),paste0("'",pnames[1],"'=",vec[2]),paste0("'",pnames[2],"'=",vec[3]),sep=',')
-	list_str <- paste(paste0('list(coef=c(',weight_str,')'),paste0('sd=',vec[4]),sep=',')
+	list_str <- paste(paste0('list(coef=c(',weight_str,')'),paste0('sd=',vec[4],")"),sep=',')##new added last ")"
 	print(paste0('in set ccc, the mat_list_str is ',list_str))
-	conf_str <- paste(model_name_str,paste0(list_str,')'),sep='=')
+	conf_str <- paste(model_name_str,list_str,sep='=')
 	print('done set model string 1')
 	conf_str
 }
@@ -185,7 +226,7 @@ set.cdcmodel.string=function(name,pnames,vec=c(1.2,2.3,3.4,3.5),sd=c(0.3,0.5)){
 set.ccdmodel.string=function(name,pnames,vec=c(1.2,2.3,3.4,3.5),sd=c(0.3,0.5)){
 	print('calling set model string 3')
 	model_name_str <- paste0(name,'_model')
-	vec_str <- paste0('c(',paste(vec,collapse=','),')')
+
 	sd_str <- paste0('c(',paste(sd,collapse=','),')')
 	mat_str <- paste0("list(coef=matrix(",vec_str,", ncol = 2, dimnames = list(c('(Intercept)','",pnames[2],"'),NULL)),sd=",sd_str,")")
 	print(paste0('in set ccd, the mat_str is ',mat_str))
@@ -224,12 +265,13 @@ set.dddmodel.string=function(name,pnames,vec=c(0.8, 0.2, 0.5, 0.5, 0.1, 0.9, 0.7
 #IntGearing = new("GRNode_c",name="IntGearing",model=list(model=IntGearing_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 newnode.class.string=function(name,type){
 	print('calling newnode class string method')
+	print(paste0('type is ',type))
 	if(type=='d'){
-		class_str <- paste0(name,"=new('GRNode_d',name='",name,"',model=list(model=",paste0(name,'_model'),"),values=",c('LOW','HIGH'),",parents=c(NA,NA),children=c(NA,NA))")
+		class_str <- paste0(name,"=new('GRNode_d',name='",name,"',model=list(model=",paste0(name,'_model'),"),values=c('LOW','HIGH'),parents=c(NA,NA),children=c(NA,NA))")
 		}else{
 		class_str <- paste0(name,"=new('GRNode_c',name='",name,"',model=list(model=",paste0(name,'_model'),"),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))")	
 		}
-		print('done newnode class string method')
+		print(paste0('done newnode class string method with class_str is ',class_str))
 		class_str
 }
 

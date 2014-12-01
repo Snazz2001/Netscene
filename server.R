@@ -309,7 +309,7 @@ net.reactive <- reactive({
 					}
 				}else if(length(ptypes)==1){
 					if(ptypes[1]=='c'){
-						weights <- c(input$weight1,input$weight2)
+						weights <- c(input$weight1,input$weight2,input$weight3)
 					}else if(ptypes[1]=='d'){
 						weights <- c(input$weight1,input$weight2,input$weight3,input$weight4)
 					}
@@ -318,7 +318,7 @@ net.reactive <- reactive({
 				if(length(ptypes)==2){
 					weights <- c(input$weight1,input$weight2,input$weight3,input$weight4,input$weight5,input$weight6,input$weight7,input$weight8)
 				}else if(length(ptypes)==1){
-					weights <- c(input$weight1,input$weight2)
+					weights <- c(input$weight1,input$weight2,input$weight3,input$weight4)
 				}
 			}#
 
@@ -334,6 +334,7 @@ net.reactive <- reactive({
 			print(paste('conf str is ',conf_str))
 			if(conf_str!=''){
 				eval(parse(text=conf_str))
+#				print(paste0('call newnode.class.string with name ',name,' and type is ',type))
 				newnode_str <- newnode.class.string(name,type)
 				print(paste('new node str is ',newnode_str))
 				eval(parse(text=newnode_str))
@@ -401,7 +402,8 @@ output$EnterParam <- renderUI({
 			}else if(length(input$ParentNodeList)==1){
 				if(ptypes[1]=='c'){
 						c(numericInput('weight1', label = 'Weight for Interception ', value = ''),
-						numericInput('weight2', label = paste0('Weight for ',pnames[1]), value = ''))
+						numericInput('weight2', label = paste0('Weight for ',pnames[1]), value = ''),
+						numericInput('weight3', label = paste0('standard deviation for ',pnames[1]), value = ''))
 				}else if(ptypes[1]=='d'){
 						c(numericInput('weight1', label = paste0('Weight for LOW ',pnames[1]), value = ''),
 						numericInput('weight2', label = paste0('Weight for HIGH ',pnames[1]), value = ''),
@@ -431,8 +433,11 @@ output$EnterParam <- renderUI({
 					}
 				}else if(length(input$ParentNodeList)==1){
 					if(ptypes[1]=='d'){
-						c(numericInput('weight1', label = paste0('Probability for LOW ',pnames[1]) , value = ''),
-						numericInput('weight2', label = paste0('Probability for HIGH ',pnames[2]), value = ''))
+						c(numericInput('weight1', label = paste0('Probability for LOW ',input$NewNodeName,' LOW ',pnames[1]) , value = ''),
+						numericInput('weight2', label = paste0('Probability for HIGH ',input$NewNodeName,' LOW ',pnames[1]), value = ''),
+						numericInput('weight3', label = paste0('Probability for LOW ',input$NewNodeName,' HIGH ',pnames[1]) , value = ''),
+						numericInput('weight4', label = paste0('Probability for HIGH ',input$NewNodeName,' HIGH ',pnames[1]), value = '')
+						)
 					}
 				}
 			}else{
