@@ -628,7 +628,7 @@ sliderInput(inputId = "maximumValue",
 				paste0("")
 			}
 			
-			})#
+			})
 		})
 
 
