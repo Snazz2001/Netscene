@@ -227,7 +227,9 @@ set.ccdmodel.string=function(name,pnames,vec=c(1.2,2.3,3.4,3.5),sd=c(0.3,0.5)){
 	print('calling set model string 3')
 	model_name_str <- paste0(name,'_model')
 
+	vec_str <- paste0('c(',paste(vec,collapse=','),')')
 	sd_str <- paste0('c(',paste(sd,collapse=','),')')
+
 	mat_str <- paste0("list(coef=matrix(",vec_str,", ncol = 2, dimnames = list(c('(Intercept)','",pnames[2],"'),NULL)),sd=",sd_str,")")
 	print(paste0('in set ccd, the mat_str is ',mat_str))
 	conf_str <- paste(model_name_str,mat_str,sep='=')
