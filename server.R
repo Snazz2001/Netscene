@@ -553,21 +553,39 @@ sliderInput(inputId = "maximumValue",
 		isolate({
 			type <- get.node.info(nnodes,input$InterestNode)[['type']]
 			print(paste0("**********",input$InterestNode))
-			evi_string <<- ''
+			evi_string <- ''
 			print(paste0('doing inference now with type ',type))
+			print(evi_list)
 			if(type == 'c'){
 				evi_vector <- unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"=='",x$value,"'"),paste(paste0(x$name,'>',x$value[[1]]),paste0(x$name,'<',x$value[[2]]),collapse='&'))))
 				print('entering c branch!!!')
+				print(evi_vector)
 				for(i in 1:length(evi_vector)){
 					if(str_count(evi_vector[i],' ')==0){
-						evi_string <- paste0(evi_string,'&',evi_vector[i])
+						if(evi_string=='')
+						{
+							evi_string <- paste0(evi_vector[i],'')
+						}else {
+							evi_string <- paste0(evi_string,'&',evi_vector[i])
+						}
 					}else{
 						temp <- str_replace(evi_vector[i],' ','&')
-						evi_string <- paste0(evi_string,'&',temp)
+						if(evi_string==''){
+							evi_string <- paste0(temp,'')
+						}else {
+							evi_string <- paste0(evi_string,'&',temp)
+						}
 					}
 				}
-				evi_string <<- str_sub(evi_string,2)
+		#		evi_string <<- str_sub(evi_string,2)
+				evi_string <- gsub(' ','',evi_string)
+
 				print(paste0("the evi_string is ",evi_string))
+#				if(grepl("^[&]",evi_string)){
+#					evi_string <<-str_sub(evi_string,2)
+#				}
+				evi_string <- gsub('<-','< -',evi_string)
+				print(paste0("now the evi_string is ",evi_string))
 				result <- cpdist(cgfit,input$InterestNode,eval(parse(text=evi_string)))
 				paste0("output is ",round(mean(result[,1]),4), " sd is ",round(sd(result[,1]),4))
 			}else if(type == 'd'){
@@ -575,17 +593,33 @@ sliderInput(inputId = "maximumValue",
 				if(length(evi_list)>0){#to make sure that there is at least one evidence in the list
 				evi_vector <- unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"=='",x$value,"'"),paste(paste0(x$name,'>',x$value[[1]]),paste0(x$name,'<',x$value[[2]]),collapse='&'))))
 				print('entering d branch!!!')
+				print(evi_vector)
 				for(i in 1:length(evi_vector)){
 					if(str_count(evi_vector[i],' ')==0){
+						if(evi_string==''){
+							evi_string <- paste0(evi_vector[i],'')
+						}else {
 						evi_string <- paste0(evi_string,'&',evi_vector[i])
+						print(paste0('for d, the evi_string 1 is ',evi_string))
+						}
 					}else{
 						temp <- str_replace(evi_vector[i],' ','&')
-						evi_string <- paste0(evi_string,'&',temp)
+						if(evi_string==''){
+							evi_string <- paste0(temp,'')
+						}else {
+							evi_string <- paste0(evi_string,'&',temp)
+							print(paste0('for d, the evi_string 2 is ',evi_string))
+						}						
 					}
 				}
-				evi_string <<- str_sub(evi_string,2)
+				print(paste0('3 here the evi_string is ',evi_string))
+				evi_string <- str_sub(evi_string,1)
+				print(paste0('4 here the evi_string is ',evi_string))
+				evi_string <- str_replace(evi_string,'<-','<  -')
 				v <- get.node.info(nnodes,input$InterestNode)$values[1]
-				temp_interest <<- paste0(input$InterestNode,"=='",v,"'")
+				temp_interest <- paste0(input$InterestNode,"=='",v,"'")
+				print(paste0('temp_interest is ',temp_interest))
+				print(paste0('evi_string is ',evi_string))
 				result <- cpquery(cgfit,eval(parse(text=temp_interest)),eval(parse(text=evi_string)))
 				print('output for d node is ',result)
 				paste0("output for D node is of being ",v, " is around ",round(result,3))
