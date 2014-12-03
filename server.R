@@ -631,7 +631,7 @@ sliderInput(inputId = "maximumValue",
 			#	result <- cpquery(cgfit,eval(parse(text=temp_interest)),eval(parse(text=evi_string)))
 				print('output for d node is ',result)
 				paste0("output for", input$InterestNode ," is of being ",v, " is around ",round(result,3))
-				}#
+				}
 			}else{
 				paste0("")
 			}
