@@ -586,7 +586,12 @@ sliderInput(inputId = "maximumValue",
 #				}
 				evi_string <- gsub('<-','< -',evi_string)
 				print(paste0("now the evi_string is ",evi_string))
-				result <- cpdist(cgfit,input$InterestNode,eval(parse(text=evi_string)))
+				print(paste0("the interest node is ",input$InterestNode))
+				eval_string <- paste0('cpdist(cgfit,"',input$InterestNode,'",',evi_string,')')
+				print(eval_string)	
+				result <- eval(parse(text=eval_string))
+			#	result <- cpdist(cgfit,input$InterestNode,eval(parse(text=evi_string)))
+				print(paste('the range of it is ',range(result),collapse=' || '))
 				paste0("output is ",round(mean(result[,1]),4), " sd is ",round(sd(result[,1]),4))
 			}else if(type == 'd'){
 #				
@@ -620,9 +625,12 @@ sliderInput(inputId = "maximumValue",
 				temp_interest <- paste0(input$InterestNode,"=='",v,"'")
 				print(paste0('temp_interest is ',temp_interest))
 				print(paste0('evi_string is ',evi_string))
-				result <- cpquery(cgfit,eval(parse(text=temp_interest)),eval(parse(text=evi_string)))
+				eval_string <- paste0('cpquery(cgfit,',temp_interest,',',evi_string,')')
+				print(eval_string)
+				result <- eval(parse(text=eval_string))
+			#	result <- cpquery(cgfit,eval(parse(text=temp_interest)),eval(parse(text=evi_string)))
 				print('output for d node is ',result)
-				paste0("output for D node is of being ",v, " is around ",round(result,3))
+				paste0("output for", input$InterestNode ," is of being ",v, " is around ",round(result,3))
 				}#
 			}else{
 				paste0("")
