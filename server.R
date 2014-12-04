@@ -26,47 +26,96 @@ EEselNode<-1
 
 evi_list <<- list()
 
+
+####old network starts here###
+####specify the node configure
+#hpi_model <- matrix(c(0.4, 0.6), ncol = 2, dimnames = list(NULL, c("LOW", "HIGH")))
+#ltv_model <- list(coef = c("(Intercept)" = 2), sd = 1)
+#dtv_model <- list(coef = matrix(c(1.2, 2.3, 3.4, 4.5), ncol = 2,
+#                              dimnames = list(c("(Intercept)", "ltv"), NULL)),
+#                sd = c(0.3, 0.6))
+#vintage_model <- list(coef=c("(Intercept)"=3,"ltv"=1.6),sd=1.5)
+#BoeIR_model <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("LOW", "HIGH")))
+#IntGearing_model <- list(coef = matrix(c(-1.2, 1.1, 2, 2.6), ncol = 2,
+#                              dimnames = list(c("(Intercept)", "BoeIR"), NULL)),
+#                sd = c(0.13, 0.36))
+#Unemp_model <- list(coef=c("(Intercept)"=0.5),sd=0.3)
+#exog_model <- list(coef=c("(Intercept)"=3,"Unemp"=1.6,"IntGearing"=-0.6),sd=1.5)
+#maturity_model <- matrix(c(0.7, 0.3), ncol = 2, dimnames = list(NULL, c("LOW", "HIGH")))
+#DefRate_model <- list(coef = matrix(c(-1.2, 1.1, 2, -2.6), ncol = 2,
+#                                  dimnames = list(c("(Intercept)", "maturity"), NULL)),
+#                    sd = c(0.13, 0.36))
+####note for 2 discrete nodes, we need to use 8 parameters(4 can be derived from another four)####
+
+####wrap node configure into GRNode class, GRNode_d is for discrete node and GRNode_c is for continous node, parents,children here works
+####as place holder
+##hpi <- new("GRNode_d",name="hpi",model=list(model=hpi_model),values=c("LOW", "HIGH"),parents=c(NA,NA),children=c(NA,NA))
+#hpi <- new("GRNode_d",name="hpi",model=list(model=hpi_model),values=colnames(hpi_model),parents=c(NA,NA),children=c(NA,NA))
+#ltv <- new("GRNode_c",name="ltv",model=list(model=ltv_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#dtv <- new("GRNode_c",name="dtv",model=list(model=dtv_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#vintage <- new("GRNode_c",name="vintage",model=list(model=vintage_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+##BoeIR <- new("GRNode_d",name="BoeIR",model=list(model=BoeIR_model),values=c("LOW", "HIGH"),parents=c(NA,NA),children=c(NA,NA))
+#BoeIR <- new("GRNode_d",name="BoeIR",model=list(model=BoeIR_model),values=colnames(BoeIR_model),parents=c(NA,NA),children=c(NA,NA))
+#IntGearing <- new("GRNode_c",name="IntGearing",model=list(model=IntGearing_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#Unemp <- new("GRNode_c",name="Unemp",model=list(model=Unemp_model),values=c(0,1),parents=c(NA,NA),children=c(NA,NA))
+#exog <- new("GRNode_c",name="exog",model=list(model=exog_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+##maturity <- new("GRNode_d",name="maturity",model=list(model=maturity_model),values=c("YES","NO"),parents=c(NA,NA),children=c(NA,NA))
+#maturity <- new("GRNode_d",name="maturity",model=list(model=maturity_model),values=colnames(maturity_model),parents=c(NA,NA),children=c(NA,NA))
+#DefRate <- new("GRNode_c",name="DefRate",model=list(model=DefRate_model),values=c(0,1),parents=c(NA,NA),children=c(NA,NA))
+
+###How to setup the model structure.
+#networkstring <- "[hpi][ltv][dtv|hpi:ltv][vintage|ltv][BoeIR][IntGearing|BoeIR:ltv][Unemp][exog|Unemp:IntGearing][maturity][DefRate|maturity:exog]"
+###old network ends here###
+
 ###specify the node configure
-hpi_model <- matrix(c(0.4, 0.6), ncol = 2, dimnames = list(NULL, c("LOW", "HIGH")))
-ltv_model <- list(coef = c("(Intercept)" = 2), sd = 1)
-dtv_model <- list(coef = matrix(c(1.2, 2.3, 3.4, 4.5), ncol = 2,
-                              dimnames = list(c("(Intercept)", "ltv"), NULL)),
-                sd = c(0.3, 0.6))
-vintage_model <- list(coef=c("(Intercept)"=3,"ltv"=1.6),sd=1.5)
-BoeIR_model <- matrix(c(0.5, 0.5), ncol = 2, dimnames = list(NULL, c("LOW", "HIGH")))
-IntGearing_model <- list(coef = matrix(c(-1.2, 1.1, 2, 2.6), ncol = 2,
-                              dimnames = list(c("(Intercept)", "BoeIR"), NULL)),
-                sd = c(0.13, 0.36))
-Unemp_model <- list(coef=c("(Intercept)"=0.5),sd=0.3)
-exog_model <- list(coef=c("(Intercept)"=3,"Unemp"=1.6,"IntGearing"=-0.6),sd=1.5)
-maturity_model <- matrix(c(0.7, 0.3), ncol = 2, dimnames = list(NULL, c("LOW", "HIGH")))
-DefRate_model <- list(coef = matrix(c(-1.2, 1.1, 2, -2.6), ncol = 2,
-                                  dimnames = list(c("(Intercept)", "maturity"), NULL)),
-                    sd = c(0.13, 0.36))
+#hpi_model <- matrix(c(0.4, 0.6), ncol = 2, dimnames = list(NULL, c("LOW", "HIGH")))
+Income_1_model <- list(coef = c("(Intercept)" = 2), sd = 1)
+Inflation_1_model <- list(coef=c("(Intercept)"=3,"Income_1"=2),sd=1.5)
+
+BoERates_1_model <- list(coef=c("(Intercept)"=3,"Income_1"=1.6,"Inflation_1"=-0.6),sd=1.5)
+DTI_1_model <- list(coef=c("(Intercept)"=3,"BoERates_1"=1.6,"Income_1"=-0.6),sd=1.5)
+LTV_1_model <- list(coef = c("(Intercept)" = 8), sd = 1)
+Spread_1_model <- list(coef=c("(Intercept)" = 2), sd = 1)
+Defaults_1_model <- list(coef=c("(Intercept)"=3,"DTI_1"=1.6,"LTV_1"=-0.6,"Spread_1"=2.2),sd=1.5)
+
+Income_2_model <- list(coef=c("(Intercept)"=3,"BoERates_1"=2),sd=1.5)
+Inflation_2_model <- list(coef=c("(Intercept)"=3,"Income_2"=2),sd=1.5)
+BoERates_2_model <- list(coef=c("(Intercept)"=3,"Income_2"=1.6,"Inflation_2"=-0.6),sd=1.5)
+DTI_2_model <- list(coef=c("(Intercept)"=3,"BoERates_2"=1.6,"Income_2"=-0.6),sd=1.5)
+LTV_2_model <- list(coef = c("(Intercept)" = 8), sd = 1)
+Spread_2_model <- list(coef=c("(Intercept)" = 2), sd = 1)
+Defaults_2_model <- list(coef=c("(Intercept)"=3,"DTI_2"=1.6,"LTV_2"=-0.6,"Spread_2"=2.2),sd=1.5)
+
 ###note for 2 discrete nodes, we need to use 8 parameters(4 can be derived from another four)###
 
 ###wrap node configure into GRNode class, GRNode_d is for discrete node and GRNode_c is for continous node, parents,children here works
 ###as place holder
 #hpi <- new("GRNode_d",name="hpi",model=list(model=hpi_model),values=c("LOW", "HIGH"),parents=c(NA,NA),children=c(NA,NA))
-hpi <- new("GRNode_d",name="hpi",model=list(model=hpi_model),values=colnames(hpi_model),parents=c(NA,NA),children=c(NA,NA))
-ltv <- new("GRNode_c",name="ltv",model=list(model=ltv_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-dtv <- new("GRNode_c",name="dtv",model=list(model=dtv_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-vintage <- new("GRNode_c",name="vintage",model=list(model=vintage_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-#BoeIR <- new("GRNode_d",name="BoeIR",model=list(model=BoeIR_model),values=c("LOW", "HIGH"),parents=c(NA,NA),children=c(NA,NA))
-BoeIR <- new("GRNode_d",name="BoeIR",model=list(model=BoeIR_model),values=colnames(BoeIR_model),parents=c(NA,NA),children=c(NA,NA))
-IntGearing <- new("GRNode_c",name="IntGearing",model=list(model=IntGearing_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-Unemp <- new("GRNode_c",name="Unemp",model=list(model=Unemp_model),values=c(0,1),parents=c(NA,NA),children=c(NA,NA))
-exog <- new("GRNode_c",name="exog",model=list(model=exog_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-#maturity <- new("GRNode_d",name="maturity",model=list(model=maturity_model),values=c("YES","NO"),parents=c(NA,NA),children=c(NA,NA))
-maturity <- new("GRNode_d",name="maturity",model=list(model=maturity_model),values=colnames(maturity_model),parents=c(NA,NA),children=c(NA,NA))
-DefRate <- new("GRNode_c",name="DefRate",model=list(model=DefRate_model),values=c(0,1),parents=c(NA,NA),children=c(NA,NA))
+Income_1 <- new("GRNode_c",name="Income_1",model=list(model=Income_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+Inflation_1 <- new("GRNode_c",name="Inflation_1",model=list(model=Inflation_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+BoERates_1 <- new("GRNode_c",name="BoERates_1",model=list(model=BoERates_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+DTI_1 <- new("GRNode_c",name="DTI_1",model=list(model=DTI_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+LTV_1 <- new("GRNode_c",name="LTV_1",model=list(model=LTV_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+Spread_1 <- new("GRNode_c",name="Spread_1",model=list(model=Spread_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+Defaults_1 <- new("GRNode_c",name="Defaults_1",model=list(model=Defaults_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 
-###How to setup the model structure.
-networkstring <- "[hpi][ltv][dtv|hpi:ltv][vintage|ltv][BoeIR][IntGearing|BoeIR:ltv][Unemp][exog|Unemp:IntGearing][maturity][DefRate|maturity:exog]"
+Income_2 <- new("GRNode_c",name="Income_2",model=list(model=Income_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+Inflation_2 <- new("GRNode_c",name="Inflation_2",model=list(model=Inflation_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+BoERates_2 <- new("GRNode_c",name="BoERates_2",model=list(model=BoERates_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+DTI_2 <- new("GRNode_c",name="DTI_2",model=list(model=DTI_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+LTV_2 <- new("GRNode_c",name="LTV_2",model=list(model=LTV_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+Spread_2 <- new("GRNode_c",name="Spread_2",model=list(model=Spread_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+Defaults_2 <- new("GRNode_c",name="Defaults_2",model=list(model=Defaults_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+
+networkstring <- "[Spread_1][LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1][Defaults_1|DTI_1:LTV_1:Spread_1]
+[Income_2|BoERates_1][Inflation_2|Income_2][BoERates_2|Inflation_2:Income_2][DTI_2|Income_2:BoERates_2][Spread_2][LTV_2][Defaults_2|DTI_2:LTV_2:Spread_2]"
+
+
+
 net <- model2network(networkstring)
 
 ###put all the GRNode into one list
-nnodes <- list(hpi,ltv,dtv,vintage,BoeIR,IntGearing,Unemp,exog,maturity,DefRate)
+nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,Spread_1,LTV_1,Defaults_1,Income_2,Inflation_2,BoERates_2,DTI_2,Spread_2,LTV_2,Defaults_2)
 print(paste('nodes length is ',length(nnodes)))
 ###build the network###
 cgfit <- fit.net.z(nnodes,net)
@@ -568,7 +617,7 @@ sliderInput(inputId = "maximumValue",
 			evi_string <- ''
 			print(paste0('doing inference now with type ',type))
 			print(evi_list)
-			if(type == 'c'){
+			if(type == 'c'&&length(evi_list)>0){
 				evi_vector <- unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"=='",x$value,"'"),paste(paste0(x$name,'>',x$value[[1]]),paste0(x$name,'<',x$value[[2]]),collapse='&'))))
 				print('entering c branch!!!')
 				print(evi_vector)
@@ -605,7 +654,7 @@ sliderInput(inputId = "maximumValue",
 			#	result <- cpdist(cgfit,input$InterestNode,eval(parse(text=evi_string)))
 				print(paste('the range of it is ',range(result),collapse=' || '))
 				paste0("output is ",round(mean(result[,1]),4), " sd is ",round(sd(result[,1]),4))
-			}else if(type == 'd'){
+			}else if(type == 'd'&&length(evi_list)>0){
 #				
 				if(length(evi_list)>0){#to make sure that there is at least one evidence in the list
 				evi_vector <- unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"=='",x$value,"'"),paste(paste0(x$name,'>',x$value[[1]]),paste0(x$name,'<',x$value[[2]]),collapse='&'))))
