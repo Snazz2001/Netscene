@@ -79,7 +79,7 @@ get.parents.info=function(nnodes,parentlist){
 print('calling get parents info info method')
 print(paste0('parentlis is ',parentlist))
 	###node has maximum two parents###
-	if(length(parentlist)>2){
+	if(length(parentlist)>3){
 		return(NA)
 	}
 	nodes_spec <- list()
@@ -142,7 +142,10 @@ conf.new.node=function(name,type,nodes_spec,weights=c()){##need to provide the n
 			}else {
 				conf_str <- set.cdmodel.string(name,pnames,vec=weights)
 			}
-
+		}else if(length(ptypes)==3){
+			if(ptypes[1]=='c'&&ptypes[2]=='c'&&ptypes[3]=='c'){
+				conf_str <- set.ccccmodel.string(name,pnames,vec=weights)	
+			}
 		}
 
 	}else{
@@ -203,6 +206,18 @@ set.cccmodel.string=function(name,pnames,vec=c(3,1,-1,1.5)){
 	weight_str <- paste(paste0("'(Intercept)'=",vec[1]),paste0("'",pnames[1],"'=",vec[2]),paste0("'",pnames[2],"'=",vec[3]),sep=',')
 	list_str <- paste(paste0('list(coef=c(',weight_str,')'),paste0('sd=',vec[4],")"),sep=',')##new added last ")"
 	print(paste0('in set ccc, the mat_list_str is ',list_str))
+	conf_str <- paste(model_name_str,list_str,sep='=')
+	print('done set model string 1')
+	conf_str
+}
+
+###
+set.ccccmodel.string=function(name,pnames,vec=c(3,1,-1,1.5,1)){
+	print('calling set cccc model string 1')
+	model_name_str <- paste0(name,'_model')
+	weight_str <- paste(paste0("'(Intercept)'=",vec[1]),paste0("'",pnames[1],"'=",vec[2]),paste0("'",pnames[2],"'=",vec[3]),paste0("'",pnames[3],"'=",vec[4]),sep=',')
+	list_str <- paste(paste0('list(coef=c(',weight_str,')'),paste0('sd=',vec[5],")"),sep=',')##new added last ")"
+	print(paste0('in set cccc, the mat_list_str is ',list_str))
 	conf_str <- paste(model_name_str,list_str,sep='=')
 	print('done set model string 1')
 	conf_str

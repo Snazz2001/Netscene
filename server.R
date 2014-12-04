@@ -313,6 +313,10 @@ net.reactive <- reactive({
 					}else if(ptypes[1]=='d'){
 						weights <- c(input$weight1,input$weight2,input$weight3,input$weight4)
 					}
+				}else if(length(ptypes)==3){
+					if(ptypes[1]=='c'&&ptypes[2]=='c'&&ptypes[3]=='c'){
+						weights <- c(input$weight1,input$weight2,input$weight3,input$weight4,input$weight5)
+					}
 				}
 			}else if(type=='d'){
 				if(length(ptypes)==2){
@@ -410,7 +414,15 @@ output$EnterParam <- renderUI({
 						numericInput('weight3', label = paste0('Standard deviation for LOW ',pnames[1]), value = ''),
 						numericInput('weight4', label = paste0('Standard deviation for HIGH ',pnames[1]), value = ''))
 				}
-			}
+			}else if(length(input$ParentNodeList)==3){
+					if(ptypes[1]=='c'&&ptypes[2]=='c'&&ptypes[3]=='c'){
+						c(numericInput('weight1', label = paste0('Weight for Intercept ',pnames[1]),value = ''),
+						numericInput('weight2', label = paste0('Weight for ',pnames[1]),value = ''),
+						numericInput('weight3', label = paste0('Weight for ',pnames[2]), value = ''),
+						numericInput('weight4', label = paste0('Weight for ',pnames[3]), value = ''),
+						numericInput('weight5', label = 'Standard deviation ', value = ''))
+					}
+				}
 			}else if(input$ContinuousOrDiscrete=='d'&&length(input$ParentNodeList)>0){
 				print(paste0('node is d'))
 				print(paste0('parentlist is ',input$ParentNodeList))
