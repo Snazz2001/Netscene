@@ -609,7 +609,7 @@ sliderInput(inputId = "maximumValue",
 		})
 		})
 
-	output$inference <- renderText({
+	output$inference <- renderPlot({
 		input$Inference
 		isolate({
 			type <- get.node.info(nnodes,input$InterestNode)[['type']]
@@ -653,7 +653,20 @@ sliderInput(inputId = "maximumValue",
 				result <- eval(parse(text=eval_string))
 			#	result <- cpdist(cgfit,input$InterestNode,eval(parse(text=evi_string)))
 				print(paste('the range of it is ',range(result),collapse=' || '))
-				paste0("output is ",round(mean(result[,1]),4), " sd is ",round(sd(result[,1]),4))
+				x_data <- with(result,get(input$InterestNode))
+				p<-ggplot(result,aes(x_data))+geom_density(alpha=.75)+xlab(input$InterestNode)+geom_text(data=NULL,x=round(mean(x_data),1),y=0.01,label=paste0('Mean is ',round(mean(x_data),2),' sd is ',round(sd(x_data),2)),col='blue')+geom_vline(xintercept = round(mean(x_data),1),col='red')
+
+				plot(density(x_data),xlab=input$InterestNode,main='Density')
+				rug(jitter(x_data))
+				abline(v=mean(x_data),col='blue')
+				y_pos <- max(unclass(density(x_data))$y)/2
+				text(mean(x_data),y_pos,paste0('mean is ',round(mean(x_data),1),' sd is ',round(sd(x_data),1)),col='red')
+			#	p<-ggplot(ddd,aes(eval(parse(text=flm))))+geom_histogram()+xlab(input$ExamineNodeX)+facet_grid(eval(parse(text=facet)))
+			#	p <- ggplot(ddd, aes(x=x_data,fill=y_data)) + geom_histogram() + xlab(input$ExamineNodeX) 		
+			#	print(paste0("output is ",round(mean(result[,1]),2), " sd is ",round(sd(result[,1]),2)))
+			#	print(paste0("output is for x_data ",round(mean(x_data),2), " sd is ",round(sd(x_data),2)))				
+			#	print(p)
+			#	paste0("output is ",round(mean(result[,1]),4), " sd is ",round(sd(result[,1]),4)) 
 			}else if(type == 'd'&&length(evi_list)>0){
 #				
 				if(length(evi_list)>0){#to make sure that there is at least one evidence in the list

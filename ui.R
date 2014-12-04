@@ -130,7 +130,8 @@ tabPanel(value=3,"Distributions",
     mainPanel(
 	plotOutput("netPlot1"),
 	textOutput("evidences"),
-	textOutput("inference")
+	#textOutput("inference")##remove this information here
+	plotOutput("inference")##new added here@04/12
 	#plotOutput("inference")
     )
     )
