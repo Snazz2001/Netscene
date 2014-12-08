@@ -18,9 +18,9 @@ namel<-function (vec){
 
 pn<-{}
 nodes<-{}
-yn   <- c(0,1)
-decl <- seq(0.1,1.1,1)
-dech <- seq(0.1,1.1,1)
+#yn   <- c(0,1)
+#decl <- seq(0.1,1.1,1)
+#dech <- seq(0.1,1.1,1)
 
 EEselNode<-1
 
@@ -72,7 +72,7 @@ evi_list <<- list()
 Income_1_model <- list(coef = c("(Intercept)" = 2), sd = 1)
 Inflation_1_model <- list(coef=c("(Intercept)"=3,"Income_1"=2),sd=1.5)
 
-BoERates_1_model <- list(coef=c("(Intercept)"=3,"Income_1"=1.6,"Inflation_1"=-0.6),sd=1.5)
+BoERates_1_model <- list(coef=c("(Intercept)"=3,"Income_1"=-11.6,"Inflation_1"=2.6),sd=1.5)
 DTI_1_model <- list(coef=c("(Intercept)"=3,"BoERates_1"=1.6,"Income_1"=-0.6),sd=1.5)
 LTV_1_model <- list(coef = c("(Intercept)" = 8), sd = 1)
 Spread_1_model <- list(coef=c("(Intercept)" = 2), sd = 1)
@@ -276,18 +276,23 @@ output$distPlot <- renderPlot({ #renderGvis
 
 #Enter Evidence
   output$netPlot1 <- renderPlot({	
-  	print('enter net plot 1 component')
-    #print(input$id)
-#		if(input$EnterOrRetract=="Enter"){
-#			nAttrs$fillcolor[input$EvidenceNode]<<-"red"
-#		}else{
-#			nAttrs$fillcolor[input$EvidenceNode]<<-"white"
-#		}	
-	
 		###plot the network, note here it is not updated yet. - zheng zhu
 		#graphviz.plot(net)
-		graphviz.plot(net.reactive())
-
+		#graphviz.plot(net,highlight=list(nodes=c('DTI_1'),fill='Yellow'))
+		input$Update
+		isolate({
+			print(paste0('******',length(evi_list)))
+		if(length(evi_list) > 0){
+			highlight_list <- unlist(lapply(evi_list,function(x) x$name))
+			print('the following is the highlight list ')
+			print(highlight_list)
+			print('done highlight list')
+			graphviz.plot(net.reactive(),highlight=list(nodes=as.vector(highlight_list),fill='Yellow'))
+		}else {
+			print('no highlight node for netplot1!')
+			graphviz.plot(net.reactive())
+			}
+		})
 		###leave the simulation later
 #		plot(net,nodeAttrs=nAttrs)
 
@@ -540,6 +545,7 @@ output$selectUI3 <- renderUI({
   output$ChooseState <- renderUI({
   	print('enter choose state component')
   	#selectInput("selection","Please do your selection",choose_states
+  	if(length(input$EvidenceNode)>0){
   	print(paste0('evidence node is ',input$EvidenceNode))
   	enode <<- get.node.info(nnodes,input$EvidenceNode)
   	data <- with(ddd, get(input$EvidenceNode))
@@ -564,6 +570,7 @@ sliderInput(inputId = "maximumValue",
    choices=enode[['values']])
 
   		)
+  }
   })
 
 ###new added
@@ -599,6 +606,7 @@ sliderInput(inputId = "maximumValue",
   				evi_list[[index_to_remove]]<<-NULL
 			}
 		}
+		print('==============done for evidence text rendering')
 	#	unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"==",x$value),paste0(x$name,'=',x$value[[1]],'->',x$value[[2]]))))
 		unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"==",x$value),paste(paste0(x$name,'>',x$value[[1]]),paste0(x$name,'<',x$value[[2]]),collapse='&'))))
 #		print(evi_list)
