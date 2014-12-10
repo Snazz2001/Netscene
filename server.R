@@ -573,13 +573,13 @@ sliderInput(inputId = "maximumValue",
   }
   })
 
-###new added
+###The blow function update the text based on user's input evidence and add them to evi_list
 	output$evidences <- renderText({
 		input$Update
 		isolate({
-		if(input$EnterOrRetract == 'Enter')
+		isValid <- TRUE
+		if(input$EnterOrRetract == 'Enter'&&length(input$EvidenceNode)>0) # if it is enter evidence 
 		{	
-
 			isExist <<- FALSE
 			if(length(evi_list)>0){
 				for(i in 1:length(evi_list)){
@@ -588,27 +588,33 @@ sliderInput(inputId = "maximumValue",
   					}
 				}
 			}
-			if(length(input$EvidenceNode)>0&&choose_states()=="c"&&!isExist){
+			if(length(input$EvidenceNode)>0&&choose_states()=="c"&&!isExist&&input$mincimumValue<input$maximumValue){ # to make sure it is continuous value and have more than one evidence and the evidence is valid
 				name_value_pairs <- list('name'=input$EvidenceNode,'type'='c',value=list(input$mincimumValue,input$maximumValue))
 				evi_list[[length(evi_list)+1]] <<- name_value_pairs
 			}else if(length(input$EvidenceNode)>0&&choose_states()=="d"&&!isExist){
 				name_value_pairs <- list('name'=input$EvidenceNode,'type'='d',value=list(input$EvidenceChoice))
 				evi_list[[length(evi_list)+1]] <<- name_value_pairs
+			}else if(length(input$EvidenceNode)>0&&choose_states()=="c"&&!isExist&&input$mincimumValue>=input$maximumValue){
+				isValid <- FALSE
 			}
-		}else {
+		}else if(input$EnterOrRetract == 'Retract'&&length(input$EvidenceNode)>0&length(evi_list)>0){ # if it is remove evidence
 			index_to_remove <- -999
-			for(i in 1:length(evi_list)){
+			for(i in 1:length(evi_list)){ # search the index to remove
   				if(evi_list[[i]]$name==input$EvidenceNode){
       				index_to_remove<-i
   				}
 			}
-			if(index_to_remove>0){
+			if(index_to_remove>0){ # remove it
   				evi_list[[index_to_remove]]<<-NULL
 			}
 		}
 		print('==============done for evidence text rendering')
 	#	unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"==",x$value),paste0(x$name,'=',x$value[[1]],'->',x$value[[2]]))))
-		unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"==",x$value),paste(paste0(x$name,'>',x$value[[1]]),paste0(x$name,'<',x$value[[2]]),collapse='&'))))
+		if(isValid){
+			unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"==",x$value),paste(paste0(x$name,'>',x$value[[1]]),paste0(x$name,'<',x$value[[2]]),collapse='&'))))
+			}else{
+			paste0('Please input valid data')	
+			}
 #		print(evi_list)
 #		evi_list
 #		switch(choose_states(),
@@ -620,6 +626,7 @@ sliderInput(inputId = "maximumValue",
 	output$inference <- renderPlot({
 		input$Inference
 		isolate({
+			if(length(input$InterestNode)>0){
 			type <- get.node.info(nnodes,input$InterestNode)[['type']]
 			print(paste0("**********",input$InterestNode))
 			evi_string <- ''
@@ -718,6 +725,7 @@ sliderInput(inputId = "maximumValue",
 				paste0("")
 			}
 			
+			}
 			})
 		})
 
