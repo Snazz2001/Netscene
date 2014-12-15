@@ -287,10 +287,10 @@ output$distPlot <- renderPlot({ #renderGvis
 			print('the following is the highlight list ')
 			print(highlight_list)
 			print('done highlight list')
-			graphviz.plot(net.reactive(),highlight=list(nodes=as.vector(highlight_list),fill='Yellow'))
+			graphviz.plot(net.reactive(),shape="ellipse",highlight=list(nodes=as.vector(highlight_list),fill='Yellow'))
 		}else {
 			print('no highlight node for netplot1!')
-			graphviz.plot(net.reactive())
+			graphviz.plot(net.reactive(),shape="ellipse")
 			}
 		})
 		###leave the simulation later
@@ -412,7 +412,7 @@ net.reactive <- reactive({
 				print('done fit network!!!')
 			}     			
 		}
-		graphviz.plot(net)})
+		graphviz.plot(net,shape="ellipse")})
 		print("Render Build Plot") 	
   })
 
@@ -675,7 +675,7 @@ sliderInput(inputId = "maximumValue",
 				rug(jitter(x_data))
 				abline(v=mean(x_data),col='blue')
 				y_pos <- max(unclass(density(x_data))$y)/2
-				text(mean(x_data),y_pos,paste0('mean is ',round(mean(x_data),1),' sd is ',round(sd(x_data),1)),col='red')
+				text(mean(x_data),y_pos,paste0('mean is ',round(mean(x_data),2),' sd is ',round(sd(x_data),2)),col='red')
 			#	p<-ggplot(ddd,aes(eval(parse(text=flm))))+geom_histogram()+xlab(input$ExamineNodeX)+facet_grid(eval(parse(text=facet)))
 			#	p <- ggplot(ddd, aes(x=x_data,fill=y_data)) + geom_histogram() + xlab(input$ExamineNodeX) 		
 			#	print(paste0("output is ",round(mean(result[,1]),2), " sd is ",round(sd(result[,1]),2)))
