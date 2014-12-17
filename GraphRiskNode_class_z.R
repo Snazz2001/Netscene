@@ -99,6 +99,25 @@ print(paste0('parentlis is ',parentlist))
 	#set.up.model(name,type,nodes_spec)
 }
 
+###To extract who is parent of the given node###
+get.parents.by.childname=function(child){
+	pnodes <-vector()
+	pnodes <- cgfit[[child]]$parents
+	pnodes
+}
+
+###To extract the range of the value on particular node###
+get.range = function(val){
+	val = as.character(val)
+	val = gsub("(","",val,fix=TRUE)
+	val = gsub("]","",val,fix=TRUE)
+	val = unlist(str_split(val,','))
+	val = as.numeric(val)
+	val
+}
+
+###Do inference based on child evidence###
+
 ###To build the update network string, support add new node only###
 construct.networkstring=function(name,nodes_spec,networkstring){
 print('calling get construct.networkstring method')	
