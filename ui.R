@@ -124,7 +124,7 @@ tabPanel(value=3,"Distributions",
 		actionButton("Inference","Do inference")
 		#submitButton("Submit")#,br(),
 		#textOutput("txt")
-			)
+			) 
 		),
     # Show a plot of the generated distribution
     mainPanel(
