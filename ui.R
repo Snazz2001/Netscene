@@ -136,10 +136,24 @@ tabPanel(value=3,"Distributions",
     )
     )
 )
-  ,
+ ,
 ###del from here###
   
-  tabPanel(value=5,"Component 3")
+  tabPanel(value=5,"ReverseTesting",
+  	sidebarLayout(
+  		sidebarPanel(
+  			img(src ="4most_logo.gif", height = 52, width = 52, align = "left"),
+  			h4("Reverse Testing"),
+  			uiOutput("selectUI_RT"),
+  			uiOutput("ChooseTargetState"),
+  			actionButton("Action",'Infere Best configure of All Nodes')
+  			),#
+  		mainPanel(
+  			plotOutput("netPlot_RT")
+  			texOutput("BestConf")#
+  			)
+  		)
+	)
 
 ))
 

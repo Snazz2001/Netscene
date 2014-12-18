@@ -10,6 +10,10 @@ require(stringr)
 source("C:\\Projects\\BayesianNetwork\\Netscene\\GraphRiskNode_class_z.R")
 
 
+###Convert the vec to a list with name is the value of vec and element of list is also value of list
+### input: vec = c("a","b")
+### output:$a    $b
+###        [1] a [2] b
 namel<-function (vec){
 		tmp<-as.list(vec)
 		names(tmp)<-as.character(unlist(vec))
@@ -24,7 +28,7 @@ nodes<-{}
 
 EEselNode<-1
 
-evi_list <<- list()
+evi_list <- list() ## should be ok if i replace << with < 
 
 
 ####old network starts here###
@@ -255,18 +259,17 @@ output$distPlot <- renderPlot({ #renderGvis
 	
   })
 
-  choose_states<-reactive({
-#  	enode <<- get.node.info(nnodes,input$EvidenceNode)
-#  	type <<- enode[['type']]
- # 	print(paste0('zheng it is ',type))
-
+###In evidence tab, to extract the EvidenceNode type based on the type information in the input$EvidenceNode
+###Maybe descard
+choose_states<-reactive({
   	switch(get.node.info(nnodes,input$EvidenceNode)[['type']],
   		"c" = "c",
   		"d" = "d"
   		)
   	})
 
-  output$ExamineNodeX<- renderUI({
+
+output$ExamineNodeX<- renderUI({
 # print(paste("boo2",input$id))
 #    if(input$id){
 	print('enter examine node x component')
@@ -288,9 +291,11 @@ output$distPlot <- renderPlot({ #renderGvis
 			print(highlight_list)
 			print('done highlight list')
 			graphviz.plot(net.reactive(),shape="ellipse",highlight=list(nodes=as.vector(highlight_list),fill='Yellow'))
+#			graphviz.plot(net,shape="ellipse",highlight=list(nodes=as.vector(highlight_list),fill='Yellow'))
 		}else {
 			print('no highlight node for netplot1!')
 			graphviz.plot(net.reactive(),shape="ellipse")
+#			graphviz.plot(net,shape="ellipse")
 			}
 		})
 		###leave the simulation later
@@ -316,7 +321,16 @@ output$distPlot <- renderPlot({ #renderGvis
 #		}
   })
 
-###new net reactive function###
+#  output$netPlot2 <- renderPlot({	
+#		###plot the network, note here it is not updated yet. - zheng zhu
+#		#graphviz.plot(net)
+#		#graphviz.plot(net,highlight=list(nodes=c('DTI_1'),fill='Yellow'))
+#			print('no highlight node for netplot1!')
+#			graphviz.plot(net,shape="ellipse")
+#  })
+
+###In Build network tab, it used to update network string so that we can have updated net structure(not compiled)
+###Use input$ParentNodeList and input$NewNodeName and global GRnode list to update the net
 net.reactive <- reactive({
 	if(length(input$ParentNodeList)>0){
 	parents <- input$ParentNodeList
@@ -324,7 +338,7 @@ net.reactive <- reactive({
 	pnode_spec <- get.parents.info(nnodes,parents)
 	networkstring <<- construct.networkstring(name,pnode_spec,networkstring)
 	print(paste('network string is ',networkstring))
-	net <- model2network(networkstring)
+	net <- model2network(networkstring)##Do not use <<- to assign global variable here, wrong!!!
 	}else{
 	net}
 	})
@@ -416,13 +430,19 @@ net.reactive <- reactive({
 		print("Render Build Plot") 	
   })
 
-  get.name.reactive<-reactive({
-  	var.opts <- namel(colnames(ddd))
-  	if(input$CreateNode){
-  		var.opts <- namel(colnames(ddd))
-  		}
-  	var.opts
-  	})
+###This is to generate a list includes the label for nodes(which can be added on the fly)
+###So the dynamic UI can reflect the dynamic content in the network it is used in Distribution and Inference Tab
+###It is based on reactive which if input$CreateNode update, it will change automatically.
+get.name.reactive<-reactive({
+	var.opts <- namel(colnames(ddd)) ##update here at 15:23
+	if(input$CreateNode){
+		var.opts <- namel(colnames(ddd))
+		}
+#    var.opts <- namel(get.name(nnodes))
+#    print(paste0('in get name reactive, nodes are ',get.name(nnodes)))
+	var.opts
+	})
+
 
 output$EnterParam <- renderUI({
 	input$CreateNode
@@ -513,6 +533,25 @@ output$EnterParam <- renderUI({
 
 	})
 
+  output$netPlot_RT <- renderPlot({	
+		###plot the network, note here it is not updated yet. - zheng zhu
+		#graphviz.plot(net)
+		#graphviz.plot(net,highlight=list(nodes=c('DTI_1'),fill='Yellow'))
+		graphviz.plot(net.reactive(),shape="ellipse")
+#		print(paste0('******',length(evi_list)))
+#		if(length(evi_list) > 0){
+#			highlight_list <- unlist(lapply(evi_list,function(x) x$name))
+#			print('the following is the highlight list ')
+#			print(highlight_list)
+#			print('done highlight list')
+#			graphviz.plot(net.reactive(),shape="ellipse",highlight=list(nodes=as.vector(highlight_list),fill='Yellow'))
+#		}else {
+#			print('no highlight node for netplot1!')
+#			graphviz.plot(net.reactive(),shape="ellipse")
+#			}
+		
+		###leave the simulation later
+  })
 
 output$selectUI1 <- renderUI({
 #	nodes.name <- get.name(nnodes)
@@ -520,6 +559,8 @@ output$selectUI1 <- renderUI({
 	var.opts <- namel(colnames(ddd))
 	print(paste0('select UI1 is working ',colnames(ddd)))
 	selectInput("ExamineNodeX",label="Examine",choices = get.name.reactive(),selected="IntGearing")
+#	selectInput("ExamineNodeX",label="Examine",choices = namel(get.name(nnodes)),selected="IntGearing")
+
 #	selectInput("ExamineNodeX",label="Examine",choices = var.opts, selected="IntGearing")
 })#
 
@@ -530,6 +571,7 @@ output$selectUI2 <- renderUI({
 	print(paste0('select UI2 is working ',colnames(ddd)))
 #	selectInput("ExamineNodeY",label="Examine",choices = var.opts, selected="vintage")
 	selectInput("ExamineNodeY",label="Examine",choices = get.name.reactive(), selected="vintage")
+#	selectInput("ExamineNodeY",label="Examine",choices = namel(get.name(nnodes)), selected="vintage")
 })
 
 output$selectUI3 <- renderUI({
@@ -539,6 +581,7 @@ output$selectUI3 <- renderUI({
 	print(paste0('select UI2 is working ',colnames(ddd)))
 #	selectInput("ExamineNodeY",label="Examine",choices = var.opts, selected="vintage")
 	selectInput("EvidenceNode",label="Select Node",choices = get.name.reactive(), selected="hpi")
+#	selectInput("EvidenceNode",label="Select Node",choices = namel(get.name(nnodes)), selected="hpi")
 })
 
 # Code to deal with entering evidence on Enter Evidence page, need to consider the binary or continuous case separately - zheng
@@ -788,7 +831,49 @@ output$selectUI4 <- renderUI({
 	print(paste0('select UI4 is working ',colnames(ddd)))
 #	selectInput("ExamineNodeY",label="Examine",choices = var.opts, selected="vintage")
 	selectInput("InterestNode",label="Node of Interests",choices = get.name.reactive(), selected="DefRate")
+#	selectInput("InterestNode",label="Node of Interests",choices = namel(get.name(nnodes)), selected="DefRate")
 })
+
+output$selectUI_RT <- renderUI({
+#	nodes.name <- get.name(nnodes)
+#	print('enter select  UI1')
+	var.opts <- namel(colnames(ddd))
+	print(paste0('select UI4 is working ',colnames(ddd)))
+#	selectInput("ExamineNodeY",label="Examine",choices = var.opts, selected="vintage")
+	selectInput("TargetNode",label="Target Node",choices = get.name.reactive(), selected="Defaults_2")
+#	selectInput("InterestNode",label="Node of Interests",choices = namel(get.name(nnodes)), selected="DefRate")
+})
+
+  output$ChooseTargetState <- renderUI({
+  	print('enter choose state component')
+  	#selectInput("selection","Please do your selection",choose_states
+  	if(length(input$TargetNode)>0){
+  	print(paste0('Target Node is ',input$TargetNode))
+  	tnode <- get.node.info(nnodes,input$TargetNode)
+  	data <- with(ddd, get(input$TargetNode))
+  	print('finish choose state soon! ')
+  	switch(choose_states(),
+  		"c" = c(sliderInput(inputId = "mincimumValue",
+                  label = "Start of the data range",
+                  min = round(min(data),3),
+                  max = round(max(data),3),
+                  value = round(median(data),3),
+                  step = round((max(data)-min(data))/200,3)
+      ),
+sliderInput(inputId = "maximumValue",
+                  label = "end of the data range",
+                  min = round(min(data),3),
+                  max = round(max(data),3),
+                  value = round(median(data),3),
+                  step = round((max(data)-min(data))/200,3)
+      )
+    ),
+      "d" = selectInput("TargetChoice",label="Choose State",
+   choices=tnode[['values']])
+
+  		)
+  }
+  })
 
 #  output$txt <- renderText({
 #	#nAttrs$fillcolor

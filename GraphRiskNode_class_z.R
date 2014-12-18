@@ -22,7 +22,7 @@ print('done fit.net.z!')
   cgfit <- custom.fit(net,dist=net_spec)	
 }
 
-###find the model based on name###
+###find the GRnode based on name###
 get.model=function(nnodes,name){
 	print('calling get model method')
 	for(i in 1:length(nnodes)){
@@ -36,7 +36,7 @@ get.model=function(nnodes,name){
 
 ###get all names in the network###
 get.name=function(nnodes){
-		print('calling get name method')
+   print('calling get name method')
    names <- c()
    for(i in 1:length(nnodes))
    {
