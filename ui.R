@@ -149,8 +149,8 @@ tabPanel(value=3,"Distributions",
   			actionButton("Action",'Infere Best configure of All Nodes')
   			),#
   		mainPanel(
-  			plotOutput("netPlot_RT")
-  			texOutput("BestConf")#
+  			plotOutput("netPlot_RT"),
+  			textOutput("BestConf")#
   			)
   		)
 	)
