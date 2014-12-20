@@ -150,7 +150,8 @@ tabPanel(value=3,"Distributions",
   			),#
   		mainPanel(
   			plotOutput("netPlot_RT"),
-  			textOutput("BestConf")#
+  			tableOutput("BestConf"),#
+  			plotOutput("BestConfPlot")
   			)
   		)
 	)

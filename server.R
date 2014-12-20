@@ -6,6 +6,7 @@ require(Rgraphviz)
 require(vcd)
 require(ggplot2)
 require(stringr)
+require(reshape)
 #include the definition of the class nodes
 source("C:\\Projects\\BayesianNetwork\\Netscene\\GraphRiskNode_class_z.R")
 
@@ -30,6 +31,7 @@ EEselNode<-1
 
 evi_list <- list() ## should be ok if i replace << with < 
 
+result_bin<-list()
 
 ####old network starts here###
 ####specify the node configure
@@ -680,14 +682,14 @@ sliderInput(inputId = "maximumValue",
 				print('entering c branch!!!')
 				print(evi_vector)
 				for(i in 1:length(evi_vector)){
-					if(str_count(evi_vector[i],' ')==0){
-						if(evi_string=='')
+					if(str_count(evi_vector[i],' ')==0){##if it has on combined evidence, i.e. only one value
+						if(evi_string=='')##if it is the first evidence
 						{
 							evi_string <- paste0(evi_vector[i],'')
-						}else {
+						}else {##otherwise append one 
 							evi_string <- paste0(evi_string,'&',evi_vector[i])
 						}
-					}else{
+					}else{##if it has combined evidence
 						temp <- str_replace(evi_vector[i],' ','&')
 						if(evi_string==''){
 							evi_string <- paste0(temp,'')
@@ -844,6 +846,8 @@ output$selectUI_RT <- renderUI({
 #	selectInput("InterestNode",label="Node of Interests",choices = namel(get.name(nnodes)), selected="DefRate")
 })
 
+
+
   output$ChooseTargetState <- renderUI({
   	print('enter choose state component')
   	#selectInput("selection","Please do your selection",choose_states
@@ -851,16 +855,16 @@ output$selectUI_RT <- renderUI({
   	print(paste0('Target Node is ',input$TargetNode))
   	tnode <- get.node.info(nnodes,input$TargetNode)
   	data <- with(ddd, get(input$TargetNode))
-  	print('finish choose state soon! ')
+  	print('finish choose target state soon! ')
   	switch(choose_states(),
-  		"c" = c(sliderInput(inputId = "mincimumValue",
+  		"c" = c(sliderInput(inputId = "minValue",
                   label = "Start of the data range",
                   min = round(min(data),3),
                   max = round(max(data),3),
                   value = round(median(data),3),
                   step = round((max(data)-min(data))/200,3)
       ),
-sliderInput(inputId = "maximumValue",
+sliderInput(inputId = "maxValue",
                   label = "end of the data range",
                   min = round(min(data),3),
                   max = round(max(data),3),
@@ -874,6 +878,85 @@ sliderInput(inputId = "maximumValue",
   		)
   }
   })
+
+output$BestConf <- renderTable({
+		input$Action
+		isolate({
+			isValidValue <- FALSE
+			targetStateStr <- ''
+			allButOne <- NULL
+			if(length(input$minValue)>0){
+				print(paste0('In BestConf, the target node is ',input$TargetNode,' with value range ',input$minValue,' and ',input$maxValue))
+				if(input$minValue>=input$maxValue){
+					isValidValue <- FALSE
+				}else{
+					allNames <- get.name.reactive()#allNames<-namel(colnames(ddd))
+					if(!(input$TargetNode %in% allNames)){
+						isValidValue <- FALSE
+					}else{
+						isValidValue <- TRUE
+						allNames[[input$TargetNode]] <- NULL
+						allButOne <- unlist(lapply(allNames,function(x) x[[1]]))
+						names(allButOne) <- NULL
+					}
+				}
+			}
+			if(!isValidValue){
+				notice<-as.data.frame('Please input valid data')
+				colnames(notice)<-'Error'	
+				notice
+			}else{
+				evi_string <- paste0('(',input$TargetNode,'>',input$minValue,'&',input$TargetNode,'<',input$maxValue,')')
+			#	querynodes <- paste(allButOne,collapse = '","')
+				querynodes <- get.parents.by.childname(input$TargetNode)
+				querynodes <- paste(querynodes,collapse = '","')
+			#	querynodes <- paste0('c("',querynodes,'")')
+				eval_string <- paste0('cpdist(cgfit,c("',querynodes,'"),',evi_string,')')
+				print('in best conf')
+				print(eval_string)
+				result <- eval(parse(text=eval_string))
+				print(head(result))
+				result_bin<<-lapply(result,function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
+				result_bin_df <- as.data.frame(result_bin)
+			### Do try to run the following code, machine will crashed!	
+		#		result_count_df <- as.data.frame(table(result_bin)) 
+				result_count_df <- as.data.frame(table(result_bin_df))
+				print(head(result_count_df))
+				bestConfName <- colnames(result_count_df)
+				print(result_count_df[which.max(result_count_df$Freq),])
+				result_count_df[which.max(result_count_df$Freq),]
+			#	paste((result_count_df[which.max(result_count_df$Freq),]))
+			}
+
+			})
+	})
+
+output$BestConfPlot <- renderPlot({
+		input$Action
+		isolate({
+			print('In best conf plot, result bin is as follows:')
+			print(str(result_bin))
+			if(length(input$minValue)>0){
+				if(length(result_bin)>1){
+					print(paste0('the length of the result bin is ',length(result_bin)))
+					result_bin_bak <- result_bin
+					print(str(result_bin_bak))
+					for(i in 1:length(result_bin_bak)){
+						levels(result_bin_bak[[i]])<-seq(1:length(levels(result_bin_bak[[i]])))
+						result_bin_bak[[i]] <- as.numeric(as.character(result_bin_bak[[i]]))
+					}
+					print('result bin bak is as follows:')
+					print(str(result_bin_bak))
+					result_bin_table <- table(result_bin_bak[[1]],result_bin_bak[[2]])
+					result_bin_3d <- melt(result_bin_table)
+					colnames(result_bin_3d)<- c("x","y","z")
+					v <- ggplot(result_bin_3d,aes(x,y,z=z))
+					p <- v+geom_tile(aes(fill=z))+stat_contour()
+					print(p)
+				}
+			}
+		})
+	})
 
 #  output$txt <- renderText({
 #	#nAttrs$fillcolor
