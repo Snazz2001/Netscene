@@ -106,6 +106,13 @@ get.parents.by.childname=function(child){
 	pnodes
 }
 
+###To extract who is parent of the given node###
+get.children.by.parentname=function(parent){
+	children_nodes <-vector()
+	children_nodes <- cgfit[[parent]]$children
+	children_nodes
+}
+
 ###To extract the range of the value on particular node###
 get.range = function(val){
 	val = as.character(val)
