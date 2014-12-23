@@ -880,199 +880,215 @@ sliderInput(inputId = "maxValue",
   })
 
 ##To get the best configuration for parents node
-#output$BestConf <- renderTable({
-#		input$Action
-#		isolate({
-#			isValidValue <- FALSE
-#			targetStateStr <- ''
-#			allButOne <- NULL
-#			if(length(input$minValue)>0){
-#				print(paste0('In BestConf, the target node is ',input$TargetNode,' with value range ',input$minValue,' and ',input$maxValue))
-#				if(input$minValue>=input$maxValue){
-#					isValidValue <- FALSE
-#				}else{
-#					allNames <- get.name.reactive()#allNames<-namel(colnames(ddd))
-#					if(!(input$TargetNode %in% allNames)){
-#						isValidValue <- FALSE
-#					}else{
-#						isValidValue <- TRUE
-#						allNames[[input$TargetNode]] <- NULL
-#						allButOne <- unlist(lapply(allNames,function(x) x[[1]]))
-#						names(allButOne) <- NULL
-#					}
-#				}
-#			}
-#			if(!isValidValue){
-#				notice<-as.data.frame('Please input valid data')
-#				colnames(notice)<-'Error'	
-#				notice
-#			}else{
-#				evi_string <- paste0('(',input$TargetNode,'>',input$minValue,'&',input$TargetNode,'<',input$maxValue,')')
-#			#	querynodes <- paste(allButOne,collapse = '","')
-#				querynodes <- get.parents.by.childname(input$TargetNode)
-#				querynodes <- paste(querynodes,collapse = '","')
-#			#	querynodes <- paste0('c("',querynodes,'")')
-#				eval_string <- paste0('cpdist(cgfit,c("',querynodes,'"),',evi_string,')')
-#				print('in best conf')
-#				print(eval_string)
-#				result <- eval(parse(text=eval_string))
-#				print(head(result))
-#				result_bin<<-lapply(result,function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
-#				result_bin_df <- as.data.frame(result_bin)
-#			### Do try to run the following code, machine will crashed!	
-#		#		result_count_df <- as.data.frame(table(result_bin)) 
-#				result_count_df <- as.data.frame(table(result_bin_df))
-#				print(head(result_count_df))
-#				bestConfName <- colnames(result_count_df)
-#				print(result_count_df[which.max(result_count_df$Freq),])
-#				result_count_df[which.max(result_count_df$Freq),]
-#			#	paste((result_count_df[which.max(result_count_df$Freq),]))
-#			}
-#		})
-#	})
-
-####The above code is to do best conf for parents node, below code is for best conf for all nodes in networks
 output$BestConf <- renderTable({
 		input$Action
 		isolate({
 			isValidValue <- FALSE
 			targetStateStr <- ''
 			allButOne <- NULL
-			visit_list<-list()
-			unvisit_list<-list()
-			best_conf<-list()#
-#check whether the value exist?
 			if(length(input$minValue)>0){
 				print(paste0('In BestConf, the target node is ',input$TargetNode,' with value range ',input$minValue,' and ',input$maxValue))
-#check whether the minValue is less thanmaxValue, i.e. it is a valid values
 				if(input$minValue>=input$maxValue){
 					isValidValue <- FALSE
 				}else{
-#if it is valid values, then check the target node exists in the network
 					allNames <- get.name.reactive()#allNames<-namel(colnames(ddd))
 					if(!(input$TargetNode %in% allNames)){
 						isValidValue <- FALSE
 					}else{
-#if all are valid, retrieve all nodes except target node
 						isValidValue <- TRUE
 						allNames[[input$TargetNode]] <- NULL
-						visit_list[[length(visit_list)+1]] <- input$TargetNode
-						best_conf[[input$TargetNode]] <- paste0('(',input$minValue,',',input$maxValue,']')
 						allButOne <- unlist(lapply(allNames,function(x) x[[1]]))
 						names(allButOne) <- NULL
 					}
 				}
-			}#
-
+			}
 			if(!isValidValue){
 				notice<-as.data.frame('Please input valid data')
 				colnames(notice)<-'Error'	
 				notice
 			}else{
-			#   compile the child parents list
-				child_parents_list <- list()
-				for(i in allButOne){
-					parents<-get.parents.by.childname(i)
-					if(length(parents)>0){
-						child_parents_list[[i]] <- parents
-					}
-				}
-				inference_from_child <- list()
 				evi_string <- paste0('(',input$TargetNode,'>',input$minValue,'&',input$TargetNode,'<',input$maxValue,')')
-				querynodes <- paste(allButOne,collapse = '","')
-			#	querynodes <- get.parents.by.childname(input$TargetNode)
-			#	querynodes <- paste(querynodes,collapse = '","')
+			#	querynodes <- paste(allButOne,collapse = '","')
+				querynodes <- get.parents.by.childname(input$TargetNode)
+				querynodes <- paste(querynodes,collapse = '","')
 			#	querynodes <- paste0('c("',querynodes,'")')
 				eval_string <- paste0('cpdist(cgfit,c("',querynodes,'"),',evi_string,')')
 				print('in best conf')
 				print(eval_string)
 				result <- eval(parse(text=eval_string))
 				print(head(result))
-			#   discretize the parents node for plotting purpose
-				result_bin<<-lapply(result[,colnames(result) %in% get.parents.by.childname(input$TargetNode)],function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
-			#   discretize the all nodes for test purpose
-				result_bin_full<-lapply(result,function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
-				result_bin_df_full <- as.data.frame(result_bin_full)
-			#   First get the parents node bin distribution
-				result_bin_df <- result_bin_df_full
-				result_bin_df <- result_bin_df[,colnames(result_bin_df) %in% get.parents.by.childname(input$TargetNode)]	
-			#	result_count_df <- as.data.frame(table(result_bin)) Do try to run the following code, machine will crashed!
+				result_bin<<-lapply(result,function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
+				result_bin_df <- as.data.frame(result_bin)
+			### Do try to run the following code, machine will crashed!	
+		#		result_count_df <- as.data.frame(table(result_bin)) 
 				result_count_df <- as.data.frame(table(result_bin_df))
 				print(head(result_count_df))
-				bestConfName <- colnames(result_bin_df)
-				bestSet <- result_count_df[which.max(result_count_df$Freq),]
-			#   store the visit_list and best configuration for the visit_list
-				for(i in bestConfName){
-					if(i!='Freq'&&!(i %in% visit_list)){
-						visit_list[[length(visit_list)+1]] <- i
-			#			best_conf[[length(best_conf)+1]] <- as.character(bestSet[[i]])
-						best_conf[[i]] <- as.character(bestSet[[i]])
-						parents <- get.parents.by.childname(i)
-						if(length(parents)>0){
-							inference_from_child[[length(inference_from_child)+1]] <- i ##the next search start from i
-						}
-					}
-				}#
-				total <- 0
-				while(length(visit_list)<length(allButOne)&&total<10){#if we have not go through all nodes and we got some child nodes.
-					inference_from_child_bak <- inference_from_child##copy by value, not reference???
-					for(i in 1:length(inference_from_child_bak)){#
-						seed_node <- inference_from_child_bak[[i]]
-						#inference_from_child[[i]] <- NULL
-					    for(i in 1:length(inference_from_child)){
-      						if(inference_from_child[[i]]==seed_node){
-        						inference_from_child[[i]] <- NULL
-      						}
-    					}
-
-
-						parents <- child_parents_list[[seed_node]]
-						interested_parents <- parents
-						result_bin_df <- result_bin_df_full
-						for(p in parents){
-							if(p %in% visit_list){
-								interested_parents <- interested_parents[!interested_parents %in% p]#if parent is in visited list, add it to constraints and remove from interested parents node
-								result_bin_df <- subset(result_bin_df,result_bin_df[,p]==best_conf[[p]])
-							}
-						}
-
-						result_bin_df <- subset(result_bin_df,result_bin_df[,seed_node]==best_conf[[seed_node]])##this can be problematic
-						result_bin_df <- result_bin_df[,interested_parents]
-						result_count_df <- as.data.frame(table(result_bin_df))
-						bestConfName <- colnames(result_bin_df)
-						bestSet <- result_count_df[which.max(result_count_df$Freq),]
-						for(j in bestConfName){
-							if(j!='Freq'&&!(j %in% visit_list)){
-								visit_list[[length(visit_list)+1]] <- j
-				#				best_conf[[length(best_conf)+1]] <- as.character(bestSet[[i]])
-								best_conf[[j]] <- as.character(bestSet[[j]])
-								parents <- get.parents.by.childname(j)
-								if(length(parents)>0&&!all(parents %in% visit_list)){
-									inference_from_child[[length(inference_from_child)+1]] <- j ##the next search start from j
-								}
-							}
-						}	
-					}
-					total <- total + 1
-				}#
-			#   store the unvisit_list
-			#	for(i in get.parents.by.childname(input$TargetNode)){
-			#		parents <- get.parents.by.childname(i)
-			#		if(length(parents)>0){#if there exist parents
-			#			for(p in parents){
-			#				if(!p %in% visit_list){
-			#					unvisit_list[[length(unvisit_list)+1]]<-p
-			#				}
-			#			}
-			#		}
-			#	}
-			#   Loop through all the nodes in the network#
-			#	print(result_count_df[which.max(result_count_df$Freq),])
-			#	result_count_df[which.max(result_count_df$Freq),]
+				bestConfName <- colnames(result_count_df)
+				print(result_count_df[which.max(result_count_df$Freq),])
+				result_count_df[which.max(result_count_df$Freq),]
 			#	paste((result_count_df[which.max(result_count_df$Freq),]))
-			}#
-			})
+			}
+		})
 	})
+
+####The above code is to do best conf for parents node, below code is for best conf for all nodes in networks
+#output$BestConf <- renderTable({
+#		input$Action
+#		isolate({
+#			isValidValue <- FALSE
+#			targetStateStr <- ''
+#			allButOne <- NULL
+#			visit_list<-list()
+#			unvisit_list<-list()
+#			best_conf<-list()#
+##check whether the value exist?
+#			if(length(input$minValue)>0){
+#				print(paste0('In BestConf, the target node is ',input$TargetNode,' with value range ',input$minValue,' and ',input$maxValue))
+##check whether the minValue is less thanmaxValue, i.e. it is a valid values
+#				if(input$minValue>=input$maxValue){
+#					isValidValue <- FALSE
+#				}else{
+##if it is valid values, then check the target node exists in the network
+#					allNames <- get.name.reactive()#allNames<-namel(colnames(ddd))
+#					if(!(input$TargetNode %in% allNames)){
+#						isValidValue <- FALSE
+#					}else{
+##if all are valid, retrieve all nodes except target node
+#						isValidValue <- TRUE
+#						allNames[[input$TargetNode]] <- NULL
+#						visit_list[[length(visit_list)+1]] <- input$TargetNode
+#						best_conf[[input$TargetNode]] <- paste0('(',input$minValue,',',input$maxValue,']')
+#						allButOne <- unlist(lapply(allNames,function(x) x[[1]]))
+#						names(allButOne) <- NULL
+#					}
+#				}
+#			}##
+
+#			if(!isValidValue){
+#				notice<-as.data.frame('Please input valid data')
+#				colnames(notice)<-'Error'	
+#				notice
+#			}else{
+#			#   compile the child parents list
+#				child_parents_list <- list()
+#				for(i in allButOne){
+#					parents<-get.parents.by.childname(i)
+#					if(length(parents)>0){
+#						child_parents_list[[i]] <- parents
+#					}
+#				}
+#				inference_from_child <- list()
+#				evi_string <- paste0('(',input$TargetNode,'>',input$minValue,'&',input$TargetNode,'<',input$maxValue,')')
+#				querynodes <- paste(allButOne,collapse = '","')
+#			#	querynodes <- get.parents.by.childname(input$TargetNode)
+#			#	querynodes <- paste(querynodes,collapse = '","')
+#			#	querynodes <- paste0('c("',querynodes,'")')
+#				eval_string <- paste0('cpdist(cgfit,c("',querynodes,'"),',evi_string,')')
+#				print('in best conf')
+#				print(eval_string)
+#				result <- eval(parse(text=eval_string))
+#				print(head(result))
+#			#   discretize the parents node for plotting purpose
+#				result_bin<<-lapply(result[,colnames(result) %in% get.parents.by.childname(input$TargetNode)],function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
+#			#   discretize the all nodes for test purpose
+#				result_bin_full<-lapply(result,function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
+#				result_bin_df_full <- as.data.frame(result_bin_full)
+#			#   First get the parents node bin distribution
+#				result_bin_df <- result_bin_df_full
+#				result_bin_df <- result_bin_df[,colnames(result_bin_df) %in% get.parents.by.childname(input$TargetNode)]	
+#			#	result_count_df <- as.data.frame(table(result_bin)) Do try to run the following code, machine will crashed!
+#				result_count_df <- as.data.frame(table(result_bin_df))
+#				print(head(result_count_df))
+#				bestConfName <- colnames(result_bin_df)
+#				bestSet <- result_count_df[which.max(result_count_df$Freq),]
+#			#   store the visit_list and best configuration for the visit_list
+#				for(i in bestConfName){
+#					if(i!='Freq'&&!(i %in% visit_list)){
+#						visit_list[[length(visit_list)+1]] <- i
+#			#			best_conf[[length(best_conf)+1]] <- as.character(bestSet[[i]])
+#						best_conf[[i]] <- as.character(bestSet[[i]])
+#						parents <- get.parents.by.childname(i)
+#						if(length(parents)>0){
+#							inference_from_child[[length(inference_from_child)+1]] <- i ##the next search start from i
+#						}
+#					}
+#				}#
+#				total <- 0
+#				while(length(visit_list)<length(allButOne)&&total<10){#if we have not go through all nodes and we got some child nodes.
+#					inference_from_child_bak <- inference_from_child##copy by value, not reference???
+#					for(ii in 1:length(inference_from_child_bak)){#
+#						seed_node <- inference_from_child_bak[[ii]]
+#						#inference_from_child[[i]] <- NULL#
+
+#						remove_index <- -1
+#					    for(i in 1:length(inference_from_child)){
+#      						if(inference_from_child[[i]]==seed_node){
+#        						remove_index <- i
+#      						}
+#    					}
+#    					if(remove_index > 0){
+#    						inference_from_child[[remove_index]] <- NULL
+#    					}#
+#
+
+#						parents <- child_parents_list[[seed_node]]
+#						interested_parents <- parents
+#						result_bin_df <- result_bin_df_full#
+
+#						if(!all(parents %in% visit_list)){
+#							for(p in parents){
+#								if(p %in% visit_list){
+#									interested_parents <- interested_parents[!interested_parents %in% p]#if parent is in visited list, add it to constraints and remove from interested parents node
+#									result_bin_df <- subset(result_bin_df,result_bin_df[,p]==best_conf[[p]])
+#								}
+#							}#
+
+#							result_bin_df <- subset(result_bin_df,result_bin_df[,seed_node]==best_conf[[seed_node]])##this can be problematic
+#							result_bin_df <- result_bin_df[,interested_parents]
+#							result_count_df <- as.data.frame(table(result_bin_df))
+#							bestConfName <- colnames(result_bin_df)
+#							bestSet <- result_count_df[which.max(result_count_df$Freq),]#
+
+#							index <- 1#
+
+#							for(j in bestConfName){
+#								if(j!='Freq'&&!(j %in% visit_list)){
+#									visit_list[[length(visit_list)+1]] <- j
+#				#					best_conf[[length(best_conf)+1]] <- as.character(bestSet[[i]])
+#									if(!is.null(bestSet[[j]])){
+#										best_conf[[j]] <- as.character(bestSet[[j]])
+#									}else{
+#										best_conf[[j]] <- as.character(bestSet[,index])
+#										index <- index + 1
+#									}
+#									parents <- get.parents.by.childname(j)
+#									if(length(parents)>0&&!all(parents %in% visit_list)){
+#										inference_from_child[[length(inference_from_child)+1]] <- j ##the next search start from j
+#									}
+#								}
+#							}
+#						}	
+#					}
+#					total <- total + 1
+#				}#
+#			#   store the unvisit_list
+#			#	for(i in get.parents.by.childname(input$TargetNode)){
+#			#		parents <- get.parents.by.childname(i)
+#			#		if(length(parents)>0){#if there exist parents
+#			#			for(p in parents){
+#			#				if(!p %in% visit_list){
+#			#					unvisit_list[[length(unvisit_list)+1]]<-p
+#			#				}
+#			#			}
+#			#		}
+#			#	}
+#			#   Loop through all the nodes in the network#
+#			#	print(result_count_df[which.max(result_count_df$Freq),])
+#			#	result_count_df[which.max(result_count_df$Freq),]
+#			#	paste((result_count_df[which.max(result_count_df$Freq),]))
+#			}#
+#			})
+#	})
 
 output$BestConfPlot <- renderPlot({
 		input$Action
