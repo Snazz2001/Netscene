@@ -1034,7 +1034,7 @@ output$BestConf <- renderTable({
 #						parents <- child_parents_list[[seed_node]]
 #						interested_parents <- parents
 #						result_bin_df <- result_bin_df_full#
-
+ 
 #						if(!all(parents %in% visit_list)){
 #							for(p in parents){
 #								if(p %in% visit_list){
