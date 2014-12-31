@@ -907,7 +907,7 @@ output$BestConf <- renderTable({
 				colnames(notice)<-'Error'	
 				notice
 			}else{
-				evi_string <- paste0('(',input$TargetNode,'>',input$minValue,'&',input$TargetNode,'<',input$maxValue,')')
+				evi_string <- paste0('(',input$TargetNode,'>',input$minValue,'&',input$TargetNode,'< ',input$maxValue,')')
 			#	querynodes <- paste(allButOne,collapse = '","')
 				querynodes <- get.parents.by.childname(input$TargetNode)
 				querynodes <- paste(querynodes,collapse = '","')
