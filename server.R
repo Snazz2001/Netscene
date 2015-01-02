@@ -77,20 +77,20 @@ result_bin<-list()
 #hpi_model <- matrix(c(0.4, 0.6), ncol = 2, dimnames = list(NULL, c("LOW", "HIGH")))
 Income_1_model <- list(coef = c("(Intercept)" = 2), sd = 1)
 Inflation_1_model <- list(coef=c("(Intercept)"=3,"Income_1"=2),sd=1.5)
-
 BoERates_1_model <- list(coef=c("(Intercept)"=3,"Income_1"=-11.6,"Inflation_1"=2.6),sd=1.5)
-DTI_1_model <- list(coef=c("(Intercept)"=3,"BoERates_1"=1.6,"Income_1"=-0.6),sd=1.5)
-LTV_1_model <- list(coef = c("(Intercept)" = 8), sd = 1)
-Spread_1_model <- list(coef=c("(Intercept)" = 2), sd = 1)
-Defaults_1_model <- list(coef=c("(Intercept)"=3,"DTI_1"=1.6,"LTV_1"=-0.6,"Spread_1"=2.2),sd=1.5)
 
-Income_2_model <- list(coef=c("(Intercept)"=3,"BoERates_1"=2),sd=1.5)
-Inflation_2_model <- list(coef=c("(Intercept)"=3,"Income_2"=2),sd=1.5)
-BoERates_2_model <- list(coef=c("(Intercept)"=3,"Income_2"=1.6,"Inflation_2"=-0.6),sd=1.5)
-DTI_2_model <- list(coef=c("(Intercept)"=3,"BoERates_2"=1.6,"Income_2"=-0.6),sd=1.5)
-LTV_2_model <- list(coef = c("(Intercept)" = 8), sd = 1)
-Spread_2_model <- list(coef=c("(Intercept)" = 2), sd = 1)
-Defaults_2_model <- list(coef=c("(Intercept)"=3,"DTI_2"=1.6,"LTV_2"=-0.6,"Spread_2"=2.2),sd=1.5)
+DTI_1_model <- list(coef=c("(Intercept)"=3,"BoERates_1"=1.6,"Income_1"=-0.6,"LTV_1"=1.2,"Spread_1"=1.3),sd=1.5)#update
+LTV_1_model <- list(coef = c("(Intercept)" = 8), sd = 1)
+Spread_1_model <- list(coef=c("(Intercept)" = 0.13), sd = 1)
+Defaults_1_model <- list(coef=c("(Intercept)"=3,"DTI_1"=1.6,"LTV_1"=-0.6),sd=1.5)
+
+#Income_2_model <- list(coef=c("(Intercept)"=3,"BoERates_1"=2),sd=1.5)
+#Inflation_2_model <- list(coef=c("(Intercept)"=3,"Income_2"=2),sd=1.5)
+#BoERates_2_model <- list(coef=c("(Intercept)"=3,"Income_2"=1.6,"Inflation_2"=-0.6),sd=1.5)
+#DTI_2_model <- list(coef=c("(Intercept)"=3,"BoERates_2"=1.6,"Income_2"=-0.6),sd=1.5)
+#LTV_2_model <- list(coef = c("(Intercept)" = 8), sd = 1)
+#Spread_2_model <- list(coef=c("(Intercept)" = 2), sd = 1)
+#Defaults_2_model <- list(coef=c("(Intercept)"=3,"DTI_2"=1.6,"LTV_2"=-0.6,"Spread_2"=2.2),sd=1.5)
 
 ###note for 2 discrete nodes, we need to use 8 parameters(4 can be derived from another four)###
 
@@ -105,23 +105,24 @@ LTV_1 <- new("GRNode_c",name="LTV_1",model=list(model=LTV_1_model),values=c(-100
 Spread_1 <- new("GRNode_c",name="Spread_1",model=list(model=Spread_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 Defaults_1 <- new("GRNode_c",name="Defaults_1",model=list(model=Defaults_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 
-Income_2 <- new("GRNode_c",name="Income_2",model=list(model=Income_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-Inflation_2 <- new("GRNode_c",name="Inflation_2",model=list(model=Inflation_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-BoERates_2 <- new("GRNode_c",name="BoERates_2",model=list(model=BoERates_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-DTI_2 <- new("GRNode_c",name="DTI_2",model=list(model=DTI_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-LTV_2 <- new("GRNode_c",name="LTV_2",model=list(model=LTV_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-Spread_2 <- new("GRNode_c",name="Spread_2",model=list(model=Spread_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-Defaults_2 <- new("GRNode_c",name="Defaults_2",model=list(model=Defaults_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#Income_2 <- new("GRNode_c",name="Income_2",model=list(model=Income_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#Inflation_2 <- new("GRNode_c",name="Inflation_2",model=list(model=Inflation_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#BoERates_2 <- new("GRNode_c",name="BoERates_2",model=list(model=BoERates_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#DTI_2 <- new("GRNode_c",name="DTI_2",model=list(model=DTI_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#LTV_2 <- new("GRNode_c",name="LTV_2",model=list(model=LTV_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#Spread_2 <- new("GRNode_c",name="Spread_2",model=list(model=Spread_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#Defaults_2 <- new("GRNode_c",name="Defaults_2",model=list(model=Defaults_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 
-networkstring <- "[Spread_1][LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1][Defaults_1|DTI_1:LTV_1:Spread_1]
-[Income_2|BoERates_1][Inflation_2|Income_2][BoERates_2|Inflation_2:Income_2][DTI_2|Income_2:BoERates_2][Spread_2][LTV_2][Defaults_2|DTI_2:LTV_2:Spread_2]"
+#networkstring <- "[Spread_1][LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1][Defaults_1|DTI_1:LTV_1:Spread_1]
+#[Income_2|BoERates_1][Inflation_2|Income_2][BoERates_2|Inflation_2:Income_2][DTI_2|Income_2:BoERates_2][Spread_2][LTV_2][Defaults_2|DTI_2:LTV_2:Spread_2]"
 
-
+networkstring <- "[Spread_1][LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1:Spread_1:LTV_1][Defaults_1|DTI_1:LTV_1]"
 
 net <- model2network(networkstring)
 
 ###put all the GRNode into one list
-nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,Spread_1,LTV_1,Defaults_1,Income_2,Inflation_2,BoERates_2,DTI_2,Spread_2,LTV_2,Defaults_2)
+#nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,Spread_1,LTV_1,Defaults_1,Income_2,Inflation_2,BoERates_2,DTI_2,Spread_2,LTV_2,Defaults_2)
+nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,Spread_1,LTV_1,Defaults_1)
 print(paste('nodes length is ',length(nnodes)))
 ###build the network###
 cgfit <- fit.net.z(nnodes,net)
@@ -842,7 +843,8 @@ output$selectUI_RT <- renderUI({
 	var.opts <- namel(colnames(ddd))
 	print(paste0('select UI4 is working ',colnames(ddd)))
 #	selectInput("ExamineNodeY",label="Examine",choices = var.opts, selected="vintage")
-	selectInput("TargetNode",label="Target Node",choices = get.name.reactive(), selected="Defaults_2")
+#	selectInput("TargetNode",label="Target Node",choices = get.name.reactive(), selected="Defaults_1")
+	selectInput("TargetNode",label="Target Node",choices = "Defaults_1", selected="Defaults_1")
 #	selectInput("InterestNode",label="Node of Interests",choices = namel(get.name(nnodes)), selected="DefRate")
 })
 
@@ -977,7 +979,7 @@ output$BestConf <- renderTable({
 					}
 				}
 				inference_from_child <- list()
-				evi_string <- paste0('(',input$TargetNode,'>',input$minValue,'&',input$TargetNode,'<',input$maxValue,')')
+				evi_string <- paste0('(',input$TargetNode,'>',input$minValue,'&',input$TargetNode,'< ',input$maxValue,')')
 				querynodes <- paste(allButOne,collapse = '","')
 			#	querynodes <- get.parents.by.childname(input$TargetNode)
 			#	querynodes <- paste(querynodes,collapse = '","')
@@ -1089,17 +1091,22 @@ output$BestConfPlot <- renderPlot({
 			print('In best conf plot, result bin is as follows:')
 			print(str(result_bin))
 			if(length(input$minValue)>0){
+				#result_bin is discretized parents node for plotting purpose
+				#since we do contour plot, we need two variables, so length(result_bin)>1
 				if(length(result_bin)>1){
 					print(paste0('the length of the result bin is ',length(result_bin)))
 					result_bin_bak <- result_bin
 					print(str(result_bin_bak))
 					for(i in 1:length(result_bin_bak)){
+						##add levels to discreted factor and convert it back to numeric
 						levels(result_bin_bak[[i]])<-seq(1:length(levels(result_bin_bak[[i]])))
 						result_bin_bak[[i]] <- as.numeric(as.character(result_bin_bak[[i]]))
 					}
 					print('result bin bak is as follows:')
 					print(str(result_bin_bak))
+					##get freq table
 					result_bin_table <- table(result_bin_bak[[1]],result_bin_bak[[2]])
+					##convert to long format
 					result_bin_3d <- melt(result_bin_table)
 					colnames(result_bin_3d)<- c("x","y","z")
 					print(result_bin_3d[which.max(result_bin_3d$z),])
