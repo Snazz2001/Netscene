@@ -713,15 +713,20 @@ sliderInput(inputId = "maximumValue",
 				print(eval_string)	
 				result <- eval(parse(text=eval_string))
 			#	result <- cpdist(cgfit,input$InterestNode,eval(parse(text=evi_string)))
-				print(paste('the range of it is ',range(result),collapse=' || '))
-				x_data <- with(result,get(input$InterestNode))
-				p<-ggplot(result,aes(x_data))+geom_density(alpha=.75)+xlab(input$InterestNode)+geom_text(data=NULL,x=round(mean(x_data),1),y=0.01,label=paste0('Mean is ',round(mean(x_data),2),' sd is ',round(sd(x_data),2)),col='blue')+geom_vline(xintercept = round(mean(x_data),1),col='red')
+			####Need to make sure result has valid value instead of 0.
+				if(nrow(result)>0){
+					print(paste('the range of it is ',range(result),collapse=' || '))
+					x_data <- with(result,get(input$InterestNode))
+					p<-ggplot(result,aes(x_data))+geom_density(alpha=.75)+xlab(input$InterestNode)+geom_text(data=NULL,x=round(mean(x_data),1),y=0.01,label=paste0('Mean is ',round(mean(x_data),2),' sd is ',round(sd(x_data),2)),col='blue')+geom_vline(xintercept = round(mean(x_data),1),col='red')
 
-				plot(density(x_data),xlab=input$InterestNode,main='Density')
-				rug(jitter(x_data))
-				abline(v=mean(x_data),col='blue')
-				y_pos <- max(unclass(density(x_data))$y)/2
-				text(mean(x_data),y_pos,paste0('mean is ',round(mean(x_data),2),' sd is ',round(sd(x_data),2)),col='red')
+					plot(density(x_data),xlab=input$InterestNode,main='Density')
+					rug(jitter(x_data))
+					abline(v=mean(x_data),col='blue')
+					y_pos <- max(unclass(density(x_data))$y)/2
+					text(mean(x_data),y_pos,paste0('mean is ',round(mean(x_data),2),' sd is ',round(sd(x_data),2)),col='red')
+				}else{
+					print('No valid output')
+				}
 			#	p<-ggplot(ddd,aes(eval(parse(text=flm))))+geom_histogram()+xlab(input$ExamineNodeX)+facet_grid(eval(parse(text=facet)))
 			#	p <- ggplot(ddd, aes(x=x_data,fill=y_data)) + geom_histogram() + xlab(input$ExamineNodeX) 		
 			#	print(paste0("output is ",round(mean(result[,1]),2), " sd is ",round(sd(result[,1]),2)))
@@ -731,41 +736,44 @@ sliderInput(inputId = "maximumValue",
 			}else if(type == 'd'&&length(evi_list)>0){
 #				
 				if(length(evi_list)>0){#to make sure that there is at least one evidence in the list
-				evi_vector <- unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"=='",x$value,"'"),paste(paste0(x$name,'>',x$value[[1]]),paste0(x$name,'<',x$value[[2]]),collapse='&'))))
-				print('entering d branch!!!')
-				print(evi_vector)
-				for(i in 1:length(evi_vector)){
-					if(str_count(evi_vector[i],' ')==0){
-						if(evi_string==''){
-							evi_string <- paste0(evi_vector[i],'')
-						}else {
-						evi_string <- paste0(evi_string,'&',evi_vector[i])
-						print(paste0('for d, the evi_string 1 is ',evi_string))
+					evi_vector <- unlist(lapply(evi_list,function(x) ifelse(x$type=='d',paste0(x$name,"=='",x$value,"'"),paste(paste0(x$name,'>',x$value[[1]]),paste0(x$name,'<',x$value[[2]]),collapse='&'))))
+					print('entering d branch!!!')
+					print(evi_vector)
+					for(i in 1:length(evi_vector)){
+						if(str_count(evi_vector[i],' ')==0){
+							if(evi_string==''){
+								evi_string <- paste0(evi_vector[i],'')
+							}else {
+							evi_string <- paste0(evi_string,'&',evi_vector[i])
+							print(paste0('for d, the evi_string 1 is ',evi_string))
+							}
+						}else{
+							temp <- str_replace(evi_vector[i],' ','&')
+							if(evi_string==''){
+								evi_string <- paste0(temp,'')
+							}else {
+								evi_string <- paste0(evi_string,'&',temp)
+								print(paste0('for d, the evi_string 2 is ',evi_string))
+							}						
 						}
-					}else{
-						temp <- str_replace(evi_vector[i],' ','&')
-						if(evi_string==''){
-							evi_string <- paste0(temp,'')
-						}else {
-							evi_string <- paste0(evi_string,'&',temp)
-							print(paste0('for d, the evi_string 2 is ',evi_string))
-						}						
 					}
-				}
-				print(paste0('3 here the evi_string is ',evi_string))
-				evi_string <- str_sub(evi_string,1)
-				print(paste0('4 here the evi_string is ',evi_string))
-				evi_string <- str_replace(evi_string,'<-','<  -')
-				v <- get.node.info(nnodes,input$InterestNode)$values[1]
-				temp_interest <- paste0(input$InterestNode,"=='",v,"'")
-				print(paste0('temp_interest is ',temp_interest))
-				print(paste0('evi_string is ',evi_string))
-				eval_string <- paste0('cpquery(cgfit,',temp_interest,',',evi_string,')')
-				print(eval_string)
-				result <- eval(parse(text=eval_string))
+					print(paste0('3 here the evi_string is ',evi_string))
+					evi_string <- str_sub(evi_string,1)
+					print(paste0('4 here the evi_string is ',evi_string))
+					evi_string <- str_replace(evi_string,'<-','<  -')
+					v <- get.node.info(nnodes,input$InterestNode)$values[1]
+					temp_interest <- paste0(input$InterestNode,"=='",v,"'")
+					print(paste0('temp_interest is ',temp_interest))
+					print(paste0('evi_string is ',evi_string))
+					eval_string <- paste0('cpquery(cgfit,',temp_interest,',',evi_string,')')
+					print(eval_string)
+					result <- eval(parse(text=eval_string))
 			#	result <- cpquery(cgfit,eval(parse(text=temp_interest)),eval(parse(text=evi_string)))
-				print('output for d node is ',result)
-				paste0("output for", input$InterestNode ," is of being ",v, " is around ",round(result,3))
+				##If there is valid result, then print it out.
+					if(nrow(result)>0){
+						print('output for d node is ',result)
+						paste0("output for", input$InterestNode ," is of being ",v, " is around ",round(result,3))
+					}
 				}
 			}else{
 				paste0("")
@@ -957,10 +965,11 @@ output$BestConf <- renderTable({
 					}else{
 #if all are valid, retrieve all nodes except target node
 						isValidValue <- TRUE
-						allNames[[input$TargetNode]] <- NULL
+						allButOne <- allNames
+						allButOne[[input$TargetNode]] <- NULL
 						visit_list[[length(visit_list)+1]] <- input$TargetNode
 						best_conf[[input$TargetNode]] <- paste0('(',input$minValue,',',input$maxValue,']')
-						allButOne <- unlist(lapply(allNames,function(x) x[[1]]))
+						allButOne <- unlist(lapply(allButOne,function(x) x[[1]]))
 						names(allButOne) <- NULL##unname(allButOne)
 					}
 				}
@@ -979,6 +988,7 @@ output$BestConf <- renderTable({
 					}
 				}
 				inference_from_child <- list()
+			#   retrieve all possible data for the target node given specific range.	
 				evi_string <- paste0('(',input$TargetNode,'>',input$minValue,'&',input$TargetNode,'< ',input$maxValue,')')
 				querynodes <- paste(allButOne,collapse = '","')
 			#	querynodes <- get.parents.by.childname(input$TargetNode)
@@ -990,9 +1000,9 @@ output$BestConf <- renderTable({
 				result <- eval(parse(text=eval_string))
 				print(head(result))
 			#   discretize the parents node for plotting purpose
-				result_bin<<-lapply(result[,colnames(result) %in% get.parents.by.childname(input$TargetNode)],function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
+				result_bin <<- lapply(result[,colnames(result) %in% get.parents.by.childname(input$TargetNode)],function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
 			#   discretize the all nodes for test purpose
-				result_bin_full<-lapply(result,function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
+				result_bin_full <- lapply(result,function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
 				result_bin_df_full <- as.data.frame(result_bin_full)
 			#   First get the parents node bin distribution
 				result_bin_df <- result_bin_df_full
@@ -1015,7 +1025,7 @@ output$BestConf <- renderTable({
 					}
 				}#
 				total <- 0
-				while(length(visit_list)<length(allButOne)&&total<10){#if we have not go through all nodes and we got some child nodes.
+				while(length(visit_list)<length(allNames)&&total<10){#if we have not go through all nodes and we got some child nodes.
 					inference_from_child_bak <- inference_from_child##copy by value, not reference???
 					print(inference_from_child)
 					print('***************')
@@ -1027,6 +1037,7 @@ output$BestConf <- renderTable({
 						seed_node <- inference_from_child_bak[[ii]]
 						#inference_from_child[[i]] <- NULL#
 						print(paste0('@@@ processing seed node :',seed_node))
+						print(paste0('--- For now the inference from child list has ',inference_from_child_bak))
 						remove_index <- -1
 					    for(i in 1:length(inference_from_child)){
       						if(inference_from_child[[i]]==seed_node){
@@ -1075,8 +1086,9 @@ output$BestConf <- renderTable({
 					}
 					print('---the best conf so far is ')
 					print(best_conf)
-				}
+					}
 					total <- total + 1
+					print(paste0('!!!! total is ',total))
 				}
 				best_conf_table<-as.data.frame(unlist(best_conf))#
 				names(best_conf_table)<-'Range'
