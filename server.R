@@ -75,14 +75,17 @@ result_bin<-list()
 
 ###specify the node configure
 #hpi_model <- matrix(c(0.4, 0.6), ncol = 2, dimnames = list(NULL, c("LOW", "HIGH")))
-Income_1_model <- list(coef = c("(Intercept)" = 2), sd = 1)
+Income_1_model <- list(coef = c("(Intercept)" = 0.3), sd = 0.2)#based on page 9 at document.
 Inflation_1_model <- list(coef=c("(Intercept)"=3,"Income_1"=2),sd=1.5)
 BoERates_1_model <- list(coef=c("(Intercept)"=3,"Income_1"=-11.6,"Inflation_1"=2.6),sd=1.5)
 
 DTI_1_model <- list(coef=c("(Intercept)"=3,"BoERates_1"=1.6,"Income_1"=-0.6,"LTV_1"=1.2,"Spread_1"=1.3),sd=1.5)#update
-LTV_1_model <- list(coef = c("(Intercept)" = 8), sd = 1)
-Spread_1_model <- list(coef=c("(Intercept)" = 0.13), sd = 1)
-Defaults_1_model <- list(coef=c("(Intercept)"=3,"DTI_1"=1.6,"LTV_1"=-0.6),sd=1.5)
+#LTV_1_model <- list(coef = c("(Intercept)" = 0.4813), sd = 0.2248)##sd is derived from the table, basically it is a mean.
+##estimate from beta distribution with shape1=5,shape2=2, it is transformed data(d = 1.94485, transformed data is (x**d-1)/d.)
+##to get the raw LTV data, we need (td+1)**(1/d), t is transformed data, d is 1.94485
+LTV_1_model <- list(coef = c("(Intercept)" = -0.2344), sd = 0.1119) 
+Spread_1_model <- list(coef=c("(Intercept)" = 0.013), sd = 0.001)##based on the assumption that the spread is fixed and we model it using peak gaussian.
+Defaults_1_model <- list(coef=c("(Intercept)"=-0.0087,"DTI_1"=0.3034,"LTV_1"=0.3455),sd=0.1)#sd is derived from the default rate sd. Note the weight is multiply by 100 here
 
 #Income_2_model <- list(coef=c("(Intercept)"=3,"BoERates_1"=2),sd=1.5)
 #Inflation_2_model <- list(coef=c("(Intercept)"=3,"Income_2"=2),sd=1.5)

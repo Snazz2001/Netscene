@@ -349,5 +349,20 @@ query.node=function(cgfit,node,value='',events){
 	query_str
 }
 
+boxcox.tran = function(x,d){
+	if(d!=0){
+		r=((x**d-1)/d)
+	}else{
+		r=ln(x)
+	}
+	r
+}
 
-
+boxcox.tran.r = function(t,d){
+	if(d!=0){
+		r=(t*d+1)**(1/d)
+	}else{
+		r=exp(t)
+	}
+	r
+}
