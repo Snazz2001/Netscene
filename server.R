@@ -625,7 +625,7 @@ output$selectUI1 <- renderUI({
 #	print('enter select  UI1')
 	var.opts <- namel(colnames(ddd))
 	print(paste0('select UI1 is working ',colnames(ddd)))
-	selectInput("ExamineNodeX",label="Examine",choices = get.name.reactive(),selected="IntGearing")
+	selectInput("ExamineNodeX",label="Examine",choices = get.name.reactive(),selected="BoERates_1")
 #	selectInput("ExamineNodeX",label="Examine",choices = namel(get.name(nnodes)),selected="IntGearing")
 
 #	selectInput("ExamineNodeX",label="Examine",choices = var.opts, selected="IntGearing")
@@ -637,7 +637,7 @@ output$selectUI2 <- renderUI({
 	var.opts <- namel(colnames(ddd))
 	print(paste0('select UI2 is working ',colnames(ddd)))
 #	selectInput("ExamineNodeY",label="Examine",choices = var.opts, selected="vintage")
-	selectInput("ExamineNodeY",label="Examine",choices = get.name.reactive(), selected="vintage")
+	selectInput("ExamineNodeY",label="Examine",choices = get.name.reactive(), selected="LTV_1")
 #	selectInput("ExamineNodeY",label="Examine",choices = namel(get.name(nnodes)), selected="vintage")
 })
 
@@ -645,9 +645,9 @@ output$selectUI3 <- renderUI({
 #	nodes.name <- get.name(nnodes)
 #	print('enter select  UI1')
 	var.opts <- namel(colnames(ddd))
-	print(paste0('select UI2 is working ',colnames(ddd)))
+	print(paste0('select UI3 is working ',colnames(ddd)))
 #	selectInput("ExamineNodeY",label="Examine",choices = var.opts, selected="vintage")
-	selectInput("EvidenceNode",label="Select Node",choices = get.name.reactive(), selected="hpi")
+	selectInput("EvidenceNode",label="Select Node",choices = get.name.reactive(), selected="DTI_1")
 #	selectInput("EvidenceNode",label="Select Node",choices = namel(get.name(nnodes)), selected="hpi")
 })
 
@@ -660,20 +660,25 @@ output$selectUI3 <- renderUI({
   	enode <<- get.node.info(nnodes,input$EvidenceNode)
   	data <- with(ddd, get(input$EvidenceNode))
   	print('finish choose state soon! ')
+  	if(is.numeric(data)){
+  		print(min(data))
+  		print(max(data))
+  		print(head(data))
+  	}
   	switch(choose_states(),
   		"c" = c(sliderInput(inputId = "mincimumValue",
                   label = "Start of the data range",
-                  min = round(min(data),3),
+                  min = ifelse(round(min(data),3)>0,round(min(data),3),0),
                   max = round(max(data),3),
                   value = round(median(data),3),
-                  step = round((max(data)-min(data))/200,3)
+                  step = round((max(data)-min(data))/200,5)
       ),
 sliderInput(inputId = "maximumValue",
-                  label = "end of the data range",
-                  min = round(min(data),3),
+                  label = "End of the data range",
+                  min = ifelse(round(min(data),3)>0,round(min(data),3),0),
                   max = round(max(data),3),
-                  value = round(median(data),3),
-                  step = round((max(data)-min(data))/200,3)
+                  value = round(median(data),3)+0.03,
+                  step = round((max(data)-min(data))/200,5)
       )
     ),
       "d" = selectInput("EvidenceChoice",label="Choose State",
