@@ -73,19 +73,70 @@ result_bin<-list()
 #networkstring <- "[hpi][ltv][dtv|hpi:ltv][vintage|ltv][BoeIR][IntGearing|BoeIR:ltv][Unemp][exog|Unemp:IntGearing][maturity][DefRate|maturity:exog]"
 ###old network ends here###
 
-###specify the node configure
-#hpi_model <- matrix(c(0.4, 0.6), ncol = 2, dimnames = list(NULL, c("LOW", "HIGH")))
-Income_1_model <- list(coef = c("(Intercept)" = 0.3), sd = 0.2)#based on page 9 at document.
-Inflation_1_model <- list(coef=c("(Intercept)"=3,"Income_1"=2),sd=1.5)
-BoERates_1_model <- list(coef=c("(Intercept)"=3,"Income_1"=-11.6,"Inflation_1"=2.6),sd=1.5)
+income_level <- c('0','2.5%','5%')
+inflation_level <- c('<1.5%','1.5%-2.5%','>2.5%')
+boe_level <- c('0.5%','1.5%','2.5%')
+#spread_level <- c('1%','!=1%')
 
-DTI_1_model <- list(coef=c("(Intercept)"=3,"BoERates_1"=1.6,"Income_1"=-0.6,"LTV_1"=1.2,"Spread_1"=1.3),sd=1.5)#update
-#LTV_1_model <- list(coef = c("(Intercept)" = 0.4813), sd = 0.2248)##sd is derived from the table, basically it is a mean.
-##estimate from beta distribution with shape1=5,shape2=2, it is transformed data(d = 1.94485, transformed data is (x**d-1)/d.)
-##to get the raw LTV data, we need (td+1)**(1/d), t is transformed data, d is 1.94485
-LTV_1_model <- list(coef = c("(Intercept)" = -0.2344), sd = 0.1119) 
-Spread_1_model <- list(coef=c("(Intercept)" = 0.013), sd = 0.001)##based on the assumption that the spread is fixed and we model it using peak gaussian.
-Defaults_1_model <- list(coef=c("(Intercept)"=-0.0087,"DTI_1"=0.3034,"LTV_1"=0.3455),sd=0.1)#sd is derived from the default rate sd. Note the weight is multiply by 100 here
+Income_1_model <- matrix(c(0.1,0.8,0.1),ncol=3,dimnames=list(NULL,'Income_1'=income_level))
+Inflation_1_model <- matrix(c(0.9,0.09,0.01,0.1,0.6,0.3,0.01,0.3,0.69),ncol=3,dimnames=list('Inflation_1'=inflation_level,'Income_1'=income_level))
+BoERates_1_model <- c(0.99,0.005,0.005,0.9,0.09,0.01,0.8,0.19,0.01,0.99,0.005,0.005,0.6,0.39,0.01,0.2,0.6,0.2,0.9,0.09,0.01,0.2,0.7,0.1,0.01,0.4,0.59)
+dim(BoERates_1_model) <- c(3,3,3)
+dimnames(BoERates_1_model) <- list('BoERates_1'=boe_level,'Income_1'=income_level,'Inflation_1'=inflation_level)
+#Spread_1_model <- matrix(c(1,0),ncol=2,dimnames=list(NULL,'Spread_1'=spread_level))
+
+#the below is make up number
+#ltv_level <-c('<20%','20%-30%','30%-40%','40%-50%','50%-60%','60%-70%','70%-75%','75%+')
+#LTV_1_model <- matrix(c(0.02,0.05,0.09,0.14,0.19,0.2,0.19,0.12),ncol=8,dimnames=list(NULL,'LTV_1'=ltv_level))
+LTV_1_model <- list(coef = c("(Intercept)" = 0.4813), sd = 0.2248)
+
+dti_level <- c('<5%','5%-10%','10%-15%','15%-20%','20%-25%','25%+')
+DTI_1_model <- matrix(c(0.16,0.16,0.16,0.16,0.16,0.20,
+						0.13,0.14,0.15,0.16,0.18,0.24,
+						0.01,0.02,0.04,0.09,0.20,0.64,
+						0.14,0.16,0.18,0.18,0.16,0.18,
+						0.16,0.18,0.14,0.18,0.16,0.18,
+						0.18,0.18,0.16,0.18,0.16,0.14,
+						0.64,0.20,0.09,0.04,0.02,0.01,
+						0.24,0.18,0.16,0.15,0.14,0.13,
+						0.20,0.16,0.16,0.16,0.16,0.16))
+dim(DTI_1_model) <- c(6,3,3)
+dimnames(DTI_1_model) <- list('DTI_1'=dti_level,'BoERates_1'=boe_level,'Income_1'=income_level)
+
+##########
+
+Defaults_1_model <- list(coef=matrix(c(0.01,0.01,0.01,0.015,0.01,0.018,0.01,0.019,0.01,0.02,0.01,0.02),ncol=6,dimnames=list(c("(Intercept)",'LTV_1'),NULL)),
+	sd=c(0.01,0.01,0.01,0.01,0.01,0.01))
+
+#dtv_model <- list(coef = matrix(c(1.2, 2.3, 3.4, 4.5), ncol = 2,
+#                              dimnames = list(c("(Intercept)", "ltv"), NULL)),
+#                sd = c(0.3, 0.6))
+
+#defaults_level <- c('1','0')
+#Defaults_1_model <- matrix(c(0.001,0.999,0.00088,0.99912,0.00108,0.99892,0.1,0.9,0.00139,0.99861,0.00165,0.99835,0.00222,0.99778,0.00261,0.99739,
+#						0.00112,0.99888,0.00110,0.9989,0.00130,0.9987,0.00132,0.99868,0.00186,0.99814,0.00204,0.99796,0.00236,0.99764,0.00302,0.99698,
+#						0.00115,0.99885,0.00130,0.9987,0.00132,0.99868,0.00162,0.99838,0.00224,0.99776,0.00249,0.99751,0.00311,0.99689,0.00399,0.99601,
+#						0.00136,0.99864,0.00162,0.99838,0.00169,0.99831,0.00167,0.99833,0.00254,0.99746,0.00278,0.99722,0.00369,0.99631,0.00384,0.99616,
+#						0.00133,0.99867,0.00188,0.99812,0.00195,0.99805,0.00181,0.99819,0.00259,0.99741,0.00288,0.99712,0.00393,0.99607,0.00466,0.99534,
+#						0.00179,0.99821,0.00176,0.99824,0.00175,0.99825,0.00181,0.99819,0.00281,0.99719,0.00307,0.99693,0.00386,0.99614,0.00403,0.99597))
+#dim(Defaults_1_model) <- c(2,8,6)
+#dimnames(Defaults_1_model) <- list('Defaults_1'=defaults_level,'LTV_1'=ltv_level,'DTI_1'=dti_level)
+
+
+
+###specify the node configure
+##hpi_model <- matrix(c(0.4, 0.6), ncol = 2, dimnames = list(NULL, c("LOW", "HIGH")))
+#Income_1_model <- list(coef = c("(Intercept)" = 0.3), sd = 0.2)#based on page 9 at document.
+#Inflation_1_model <- list(coef=c("(Intercept)"=3,"Income_1"=2),sd=1.5)
+#BoERates_1_model <- list(coef=c("(Intercept)"=3,"Income_1"=-11.6,"Inflation_1"=2.6),sd=1.5)#
+
+#DTI_1_model <- list(coef=c("(Intercept)"=3,"BoERates_1"=1.6,"Income_1"=-0.6,"LTV_1"=1.2,"Spread_1"=1.3),sd=1.5)#update
+##LTV_1_model <- list(coef = c("(Intercept)" = 0.4813), sd = 0.2248)##sd is derived from the table, basically it is a mean.
+###estimate from beta distribution with shape1=5,shape2=2, it is transformed data(d = 1.94485, transformed data is (x**d-1)/d.)
+###to get the raw LTV data, we need (td+1)**(1/d), t is transformed data, d is 1.94485
+#LTV_1_model <- list(coef = c("(Intercept)" = -0.2344), sd = 0.1119) 
+#Spread_1_model <- list(coef=c("(Intercept)" = 0.013), sd = 0.001)##based on the assumption that the spread is fixed and we model it using peak gaussian.
+#Defaults_1_model <- list(coef=c("(Intercept)"=-0.0087,"DTI_1"=0.3034,"LTV_1"=0.3455),sd=0.1)#sd is derived from the default rate sd. Note the weight is multiply by 100 here
 
 #Income_2_model <- list(coef=c("(Intercept)"=3,"BoERates_1"=2),sd=1.5)
 #Inflation_2_model <- list(coef=c("(Intercept)"=3,"Income_2"=2),sd=1.5)
@@ -100,12 +151,20 @@ Defaults_1_model <- list(coef=c("(Intercept)"=-0.0087,"DTI_1"=0.3034,"LTV_1"=0.3
 ###wrap node configure into GRNode class, GRNode_d is for discrete node and GRNode_c is for continous node, parents,children here works
 ###as place holder
 #hpi <- new("GRNode_d",name="hpi",model=list(model=hpi_model),values=c("LOW", "HIGH"),parents=c(NA,NA),children=c(NA,NA))
-Income_1 <- new("GRNode_c",name="Income_1",model=list(model=Income_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-Inflation_1 <- new("GRNode_c",name="Inflation_1",model=list(model=Inflation_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-BoERates_1 <- new("GRNode_c",name="BoERates_1",model=list(model=BoERates_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-DTI_1 <- new("GRNode_c",name="DTI_1",model=list(model=DTI_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#Income_1 <- new("GRNode_c",name="Income_1",model=list(model=Income_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#Inflation_1 <- new("GRNode_c",name="Inflation_1",model=list(model=Inflation_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#BoERates_1 <- new("GRNode_c",name="BoERates_1",model=list(model=BoERates_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#DTI_1 <- new("GRNode_c",name="DTI_1",model=list(model=DTI_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#LTV_1 <- new("GRNode_c",name="LTV_1",model=list(model=LTV_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#Spread_1 <- new("GRNode_c",name="Spread_1",model=list(model=Spread_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#Defaults_1 <- new("GRNode_c",name="Defaults_1",model=list(model=Defaults_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+
+Income_1 <- new("GRNode_d",name="Income_1",model=list(model=Income_1_model),values=income_level,parents=c(NA,NA),children=c(NA,NA))
+Inflation_1 <- new("GRNode_d",name="Inflation_1",model=list(model=Inflation_1_model),values=inflation_level,parents=c(NA,NA),children=c(NA,NA))
+BoERates_1 <- new("GRNode_d",name="BoERates_1",model=list(model=BoERates_1_model),values=boe_level,parents=c(NA,NA),children=c(NA,NA))
+DTI_1 <- new("GRNode_d",name="DTI_1",model=list(model=DTI_1_model),values=dti_level,parents=c(NA,NA),children=c(NA,NA))
 LTV_1 <- new("GRNode_c",name="LTV_1",model=list(model=LTV_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-Spread_1 <- new("GRNode_c",name="Spread_1",model=list(model=Spread_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+#Spread_1 <- new("GRNode_d",name="Spread_1",model=list(model=Spread_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 Defaults_1 <- new("GRNode_c",name="Defaults_1",model=list(model=Defaults_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 
 #Income_2 <- new("GRNode_c",name="Income_2",model=list(model=Income_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
@@ -119,13 +178,15 @@ Defaults_1 <- new("GRNode_c",name="Defaults_1",model=list(model=Defaults_1_model
 #networkstring <- "[Spread_1][LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1][Defaults_1|DTI_1:LTV_1:Spread_1]
 #[Income_2|BoERates_1][Inflation_2|Income_2][BoERates_2|Inflation_2:Income_2][DTI_2|Income_2:BoERates_2][Spread_2][LTV_2][Defaults_2|DTI_2:LTV_2:Spread_2]"
 
-networkstring <- "[Spread_1][LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1:Spread_1:LTV_1][Defaults_1|DTI_1:LTV_1]"
-
+#networkstring <- "[Spread_1][LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1:Spread_1:LTV_1][Defaults_1|DTI_1:LTV_1]"
+networkstring <- "[LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1][Defaults_1|DTI_1:LTV_1]"
+#networkstring <- "[ALTV][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1][Defaults_1|DTI_1:ALTV]"
 net <- model2network(networkstring)
 
 ###put all the GRNode into one list
 #nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,Spread_1,LTV_1,Defaults_1,Income_2,Inflation_2,BoERates_2,DTI_2,Spread_2,LTV_2,Defaults_2)
-nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,Spread_1,LTV_1,Defaults_1)
+#nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,Spread_1,LTV_1,Defaults_1)
+nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,LTV_1,Defaults_1)
 print(paste('nodes length is ',length(nnodes)))
 ###build the network###
 cgfit <- fit.net.z(nnodes,net)
@@ -675,6 +736,7 @@ sliderInput(inputId = "maximumValue",
 	output$inference <- renderPlot({
 		input$Inference
 		isolate({
+			p.obj <<- list()
 			if(length(input$InterestNode)>0){
 			type <- get.node.info(nnodes,input$InterestNode)[['type']]
 			print(paste0("**********",input$InterestNode))
@@ -726,7 +788,7 @@ sliderInput(inputId = "maximumValue",
 					rug(jitter(x_data))
 					abline(v=mean(x_data),col='blue')
 					y_pos <- max(unclass(density(x_data))$y)/2
-					text(mean(x_data),y_pos,paste0('mean is ',round(mean(x_data),2),' sd is ',round(sd(x_data),2)),col='red')
+					text(mean(x_data),y_pos,paste0('mean is ',round(mean(x_data),4)*1000,' sd is ',round(sd(x_data),4)*1000),col='red')
 				}else{
 					print('No valid output')
 				}
@@ -765,17 +827,26 @@ sliderInput(inputId = "maximumValue",
 					print(paste0('4 here the evi_string is ',evi_string))
 					evi_string <- str_replace(evi_string,'<-','<  -')
 					v <- get.node.info(nnodes,input$InterestNode)$values[1]
-					temp_interest <- paste0(input$InterestNode,"=='",v,"'")
-					print(paste0('temp_interest is ',temp_interest))
+					#temp_interest <- paste0(input$InterestNode,"=='",v,"'")
+					#print(paste0('temp_interest is ',temp_interest))
 					print(paste0('evi_string is ',evi_string))
-					eval_string <- paste0('cpquery(cgfit,',temp_interest,',',evi_string,')')
+					eval_string <- paste0('cpdist(cgfit,node=\'',input$InterestNode,'\',evidence=(',evi_string,'))')
 					print(eval_string)
 					result <- eval(parse(text=eval_string))
+					print(head(result))
+					p.obj$data <<- result
+					p.obj$x <<- with(result,get(input$InterestNode))
+					head(p.obj$x)
+					int_node <- input$InterestNode
 			#	result <- cpquery(cgfit,eval(parse(text=temp_interest)),eval(parse(text=evi_string)))
 				##If there is valid result, then print it out.
 					if(nrow(result)>0){
-						print('output for d node is ',result)
-						paste0("output for", input$InterestNode ," is of being ",v, " is around ",round(result,3))
+						print(head(result))
+						print(int_node)
+						p <- ggplot(p.obj$data,aes(p.obj$x))+geom_histogram()+xlab(int_node)
+						print(p)
+						#print('output for d node is ',result)
+						#paste0("output for", input$InterestNode ," is of being ",v, " is around ",round(result,3))
 					}
 				}
 			}else{
@@ -869,20 +940,20 @@ output$selectUI_RT <- renderUI({
   	tnode <- get.node.info(nnodes,input$TargetNode)
   	data <- with(ddd, get(input$TargetNode))
   	print('finish choose target state soon! ')
-  	switch(choose_states(),
+  	switch(get.node.info(nnodes,input$TargetNode)[['type']],
   		"c" = c(sliderInput(inputId = "minValue",
                   label = "Start of the data range",
-                  min = round(min(data),3),
-                  max = round(max(data),3),
-                  value = round(median(data),3),
-                  step = round((max(data)-min(data))/200,3)
+                  min = round(min(data),4),
+                  max = round(max(data),4),
+                  value = round(median(data),4),
+                  step = round((max(data)-min(data))/200,4)
       ),
 sliderInput(inputId = "maxValue",
                   label = "end of the data range",
-                  min = round(min(data),3),
-                  max = round(max(data),3),
-                  value = round(median(data),3),
-                  step = round((max(data)-min(data))/200,3)
+                  min = round(min(data),4),
+                  max = round(max(data),4),
+                  value = round(median(data),4),
+                  step = round((max(data)-min(data))/200,4)
       )
     ),
       "d" = selectInput("TargetChoice",label="Choose State",
@@ -1002,10 +1073,11 @@ output$BestConf <- renderTable({
 				print(eval_string)
 				result <- eval(parse(text=eval_string))
 				print(head(result))
-			#   discretize the parents node for plotting purpose
-				result_bin <<- lapply(result[,colnames(result) %in% get.parents.by.childname(input$TargetNode)],function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
-			#   discretize the all nodes for test purpose
-				result_bin_full <- lapply(result,function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
+			#   discretize the parents node for plotting purpose, note that since we use discrete variable now, so no need to cut it. the next line need update!
+				result_bin <<- lapply(result[,colnames(result) %in% get.parents.by.childname(input$TargetNode)],function(x) ifelse(!is.factor(x),cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)),x))
+			#	result_bin <<- result[,colnames(result) %in% get.parents.by.childname(input$TargetNode)]
+			#   discretize the all nodes for test purpose need update as well
+				result_bin_full <- lapply(result,function(x) ifelse(!is.factor(x),cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)),x))
 				result_bin_df_full <- as.data.frame(result_bin_full)
 			#   First get the parents node bin distribution
 				result_bin_df <- result_bin_df_full
@@ -1015,12 +1087,16 @@ output$BestConf <- renderTable({
 				print(head(result_count_df))
 				bestConfName <- colnames(result_bin_df)
 				bestSet <- result_count_df[which.max(result_count_df$Freq),]
+				print('best set currently is ')
+				print(bestSet)
 			#   store the visit_list and best configuration for the visit_list
 				for(i in bestConfName){
 					if(i!='Freq'&&!(i %in% visit_list)){
 						visit_list[[length(visit_list)+1]] <- i
 			#			best_conf[[length(best_conf)+1]] <- as.character(bestSet[[i]])
 						best_conf[[i]] <- as.character(bestSet[[i]])
+						print('best item is')
+						print(best_conf[[i]])
 						parents <- get.parents.by.childname(i)
 						if(length(parents)>0){
 							inference_from_child[[length(inference_from_child)+1]] <- i ##the next search start from i
