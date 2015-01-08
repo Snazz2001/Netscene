@@ -696,19 +696,29 @@ sliderInput(inputId = "maximumValue",
 		if(input$EnterOrRetract == 'Enter'&&length(input$EvidenceNode)>0) # if it is enter evidence 
 		{	
 			isExist <<- FALSE
+			updateIndex <- length(evi_list)+1
 			if(length(evi_list)>0){
 				for(i in 1:length(evi_list)){
   					if(evi_list[[i]]$name==input$EvidenceNode){
-      					isExist <<- TRUE
+      					updateIndex <- i
   					}
 				}
-			}
-			if(length(input$EvidenceNode)>0&&choose_states()=="c"&&!isExist&&input$mincimumValue<input$maximumValue){ # to make sure it is continuous value and have more than one evidence and the evidence is valid
+			}##ignore the !isExist 
+#			if(length(input$EvidenceNode)>0&&choose_states()=="c"&&!isExist&&input$mincimumValue<input$maximumValue){ # to make sure it is continuous value and have more than one evidence and the evidence is valid
+#				name_value_pairs <- list('name'=input$EvidenceNode,'type'='c',value=list(input$mincimumValue,input$maximumValue))
+#				evi_list[[length(evi_list)+1]] <<- name_value_pairs
+#			}else if(length(input$EvidenceNode)>0&&choose_states()=="d"&&!isExist){
+#				name_value_pairs <- list('name'=input$EvidenceNode,'type'='d',value=list(input$EvidenceChoice))
+#				evi_list[[length(evi_list)+1]] <<- name_value_pairs
+#			}else if(length(input$EvidenceNode)>0&&choose_states()=="c"&&!isExist&&input$mincimumValue>=input$maximumValue){
+#				isValid <- FALSE
+#			}
+			if(length(input$EvidenceNode)>0&&choose_states()=="c"&&input$mincimumValue<input$maximumValue){ # to make sure it is continuous value and have more than one evidence and the evidence is valid
 				name_value_pairs <- list('name'=input$EvidenceNode,'type'='c',value=list(input$mincimumValue,input$maximumValue))
-				evi_list[[length(evi_list)+1]] <<- name_value_pairs
-			}else if(length(input$EvidenceNode)>0&&choose_states()=="d"&&!isExist){
+				evi_list[[updateIndex]] <<- name_value_pairs
+			}else if(length(input$EvidenceNode)>0&&choose_states()=="d"){
 				name_value_pairs <- list('name'=input$EvidenceNode,'type'='d',value=list(input$EvidenceChoice))
-				evi_list[[length(evi_list)+1]] <<- name_value_pairs
+				evi_list[[updateIndex]] <<- name_value_pairs
 			}else if(length(input$EvidenceNode)>0&&choose_states()=="c"&&!isExist&&input$mincimumValue>=input$maximumValue){
 				isValid <- FALSE
 			}
@@ -1079,13 +1089,24 @@ output$BestConf <- renderTable({
 				result <- eval(parse(text=eval_string))
 				print(head(result))
 			#   discretize the parents node for plotting purpose, note that since we use discrete variable now, so no need to cut it. the next line need update!
-				result_bin <<- lapply(result[,colnames(result) %in% get.parents.by.childname(input$TargetNode)],function(x) ifelse(!is.factor(x),cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)),x))
+			#	something goes wrong here!!!
+			#	result_bin <<- lapply(result[,colnames(result) %in% get.parents.by.childname(input$TargetNode)],function(x) ifelse(!is.factor(x),cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)),x))
+		
+				result_bin <<- result[,colnames(result) %in% get.parents.by.childname(input$TargetNode)]
+
 			#	result_bin <<- result[,colnames(result) %in% get.parents.by.childname(input$TargetNode)]
 			#   discretize the all nodes for test purpose need update as well
-				result_bin_full <- lapply(result,function(x) ifelse(!is.factor(x),cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)),x))
-				result_bin_df_full <- as.data.frame(result_bin_full)
+			#	result_bin_full <- lapply(result,function(x) ifelse(!is.factor(x),cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)),x))
+			#	result_bin_df_full <- as.data.frame(result_bin_full)
+				result_bin_df_full <- result
+				result_bin_full <- result
+				factorVar <- sapply(result_bin_full,function(x) is.factor(x))
+				if(!all(factorVar)){
+					result_bin_full[!factorVar] <- sapply(result_bin_full[!factorVar],function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
+				}
+
 			#   First get the parents node bin distribution
-				result_bin_df <- result_bin_df_full
+				result_bin_df <- result_bin_full
 				result_bin_df <- result_bin_df[,colnames(result_bin_df) %in% get.parents.by.childname(input$TargetNode)]	
 			#	result_count_df <- as.data.frame(table(result_bin)) Do try to run the following code, machine will crashed!
 				result_count_df <- as.data.frame(table(result_bin_df))
@@ -1185,7 +1206,20 @@ output$BestConfPlot <- renderPlot({
 		input$Action
 		isolate({
 			print('In best conf plot, result bin is as follows:')
+			print(head(result_bin))
 			print(str(result_bin))
+#			factorVar <- sapply(result_bin,function(x) is.factor(x))
+#			if(!all(factorVar)){
+#				#result_bin[!factorVar] <- sapply(result_bin[!factorVar],function(x) cut(x,ifelse((diff(range(x))/10)>1,round(diff(range(x)),0),10)))
+#				result_bin[!factorVar] <- cut(result_bin[!factorVar],12)
+#			}
+			for(cname in colnames(result_bin)){
+				if(is.numeric(result_bin[,cname])){
+					result_bin[,cname] <- cut(result_bin[,cname],10)
+				}
+			}
+
+
 			if(length(input$minValue)>0){
 				#result_bin is discretized parents node for plotting purpose
 				#since we do contour plot, we need two variables, so length(result_bin)>1
@@ -1193,11 +1227,17 @@ output$BestConfPlot <- renderPlot({
 					print(paste0('the length of the result bin is ',length(result_bin)))
 					result_bin_bak <- result_bin
 					print(str(result_bin_bak))
-					for(i in 1:length(result_bin_bak)){
+#					for(i in 1:length(result_bin_bak)){
+#						##add levels to discreted factor and convert it back to numeric
+#						levels(result_bin_bak[[i]])<-seq(1:length(levels(result_bin_bak[[i]])))
+#						result_bin_bak[[i]] <- as.numeric(as.character(result_bin_bak[[i]]))
+#					}
+					for(i in 1:dim(result_bin_bak)[2]){
 						##add levels to discreted factor and convert it back to numeric
-						levels(result_bin_bak[[i]])<-seq(1:length(levels(result_bin_bak[[i]])))
-						result_bin_bak[[i]] <- as.numeric(as.character(result_bin_bak[[i]]))
+						levels(result_bin_bak[,i])<-seq(1:length(levels(result_bin_bak[[i]])))
+						result_bin_bak[,i] <- as.numeric(as.character(result_bin_bak[[i]]))
 					}
+
 					print('result bin bak is as follows:')
 					print(str(result_bin_bak))
 					##get freq table
