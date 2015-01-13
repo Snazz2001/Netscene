@@ -76,21 +76,31 @@ result_bin<-list()
 income_level <- c('0','2.5%','5%')
 inflation_level <- c('<1.5%','1.5%-2.5%','>2.5%')
 boe_level <- c('0.5%','1.5%','2.5%')
-#spread_level <- c('1%','!=1%')
+spread_level <- c('1%','3%')#new add
 
 Income_1_model <- matrix(c(0.1,0.8,0.1),ncol=3,dimnames=list(NULL,'Income_1'=income_level))
 Inflation_1_model <- matrix(c(0.9,0.09,0.01,0.1,0.6,0.3,0.01,0.3,0.69),ncol=3,dimnames=list('Inflation_1'=inflation_level,'Income_1'=income_level))
 BoERates_1_model <- c(0.99,0.005,0.005,0.9,0.09,0.01,0.8,0.19,0.01,0.99,0.005,0.005,0.6,0.39,0.01,0.2,0.6,0.2,0.9,0.09,0.01,0.2,0.7,0.1,0.01,0.4,0.59)
 dim(BoERates_1_model) <- c(3,3,3)
 dimnames(BoERates_1_model) <- list('BoERates_1'=boe_level,'Income_1'=income_level,'Inflation_1'=inflation_level)
-#Spread_1_model <- matrix(c(1,0),ncol=2,dimnames=list(NULL,'Spread_1'=spread_level))
+Spread_1_model <- matrix(c(0.65,0.35),ncol=2,dimnames=list(NULL,'Spread_1'=spread_level))#new add
 
-#the below is make up number
-#ltv_level <-c('<20%','20%-30%','30%-40%','40%-50%','50%-60%','60%-70%','70%-75%','75%+')
-#LTV_1_model <- matrix(c(0.02,0.05,0.09,0.14,0.19,0.2,0.19,0.12),ncol=8,dimnames=list(NULL,'LTV_1'=ltv_level))
 LTV_1_model <- list(coef = c("(Intercept)" = 0.4813), sd = 0.2248)
+#the below is make up number
+ltv_level <-c('<20%','20%-30%','30%-40%','40%-50%','50%-60%','60%-70%','70%-75%','75%+')
+#LTV_1_model <- matrix(c(0.02,0.05,0.09,0.14,0.19,0.2,0.19,0.12),ncol=8,dimnames=list(NULL,'LTV_1'=ltv_level))
 
 dti_level <- c('<5%','5%-10%','10%-15%','15%-20%','20%-25%','25%+')
+#DTI_1_model <- matrix(c(0.16,0.16,0.16,0.16,0.16,0.20,
+#						0.13,0.14,0.15,0.16,0.18,0.24,
+#						0.01,0.02,0.04,0.09,0.20,0.64,
+#						0.14,0.16,0.18,0.18,0.16,0.18,
+#						0.16,0.18,0.14,0.18,0.16,0.18,
+#						0.18,0.18,0.16,0.18,0.16,0.14,
+#						0.64,0.20,0.09,0.04,0.02,0.01,
+#						0.24,0.18,0.16,0.15,0.14,0.13,
+#						0.20,0.16,0.16,0.16,0.16,0.16))
+
 DTI_1_model <- matrix(c(0.16,0.16,0.16,0.16,0.16,0.20,
 						0.13,0.14,0.15,0.16,0.18,0.24,
 						0.01,0.02,0.04,0.09,0.20,0.64,
@@ -99,12 +109,22 @@ DTI_1_model <- matrix(c(0.16,0.16,0.16,0.16,0.16,0.20,
 						0.18,0.18,0.16,0.18,0.16,0.14,
 						0.64,0.20,0.09,0.04,0.02,0.01,
 						0.24,0.18,0.16,0.15,0.14,0.13,
-						0.20,0.16,0.16,0.16,0.16,0.16))
-dim(DTI_1_model) <- c(6,3,3)
-dimnames(DTI_1_model) <- list('DTI_1'=dti_level,'BoERates_1'=boe_level,'Income_1'=income_level)
+						0.20,0.16,0.16,0.16,0.16,0.16,
+						0.16,0.16,0.16,0.16,0.16,0.20,
+						0.17,0.15,0.16,0.16,0.16,0.20,
+						0.17,0.16,0.15,0.16,0.16,0.20,
+						0.17,0.16,0.16,0.15,0.16,0.20,
+						0.16,0.16,0.16,0.16,0.16,0.20,
+						0.17,0.16,0.16,0.16,0.15,0.20,
+						0.18,0.14,0.16,0.16,0.16,0.20,
+						0.18,0.16,0.14,0.16,0.16,0.20,
+						0.18,0.16,0.16,0.14,0.16,0.20
+						))
+dim(DTI_1_model) <- c(6,3,3,2)
+dimnames(DTI_1_model) <- list('DTI_1'=dti_level,'BoERates_1'=boe_level,'Income_1'=income_level,'Spread_1'=spread_level)##add Spread_1
 
 ##########
-
+###current implementation####
 Defaults_1_model <- list(coef=matrix(c(0.01,0.01,0.01,0.015,0.01,0.018,0.01,0.019,0.01,0.02,0.01,0.02),ncol=6,dimnames=list(c("(Intercept)",'LTV_1'),NULL)),
 	sd=c(0.01,0.01,0.01,0.01,0.01,0.01))
 
@@ -112,16 +132,15 @@ Defaults_1_model <- list(coef=matrix(c(0.01,0.01,0.01,0.015,0.01,0.018,0.01,0.01
 #                              dimnames = list(c("(Intercept)", "ltv"), NULL)),
 #                sd = c(0.3, 0.6))
 
-#defaults_level <- c('1','0')
+defaults_level <- c('1','0')
 #Defaults_1_model <- matrix(c(0.001,0.999,0.00088,0.99912,0.00108,0.99892,0.1,0.9,0.00139,0.99861,0.00165,0.99835,0.00222,0.99778,0.00261,0.99739,
 #						0.00112,0.99888,0.00110,0.9989,0.00130,0.9987,0.00132,0.99868,0.00186,0.99814,0.00204,0.99796,0.00236,0.99764,0.00302,0.99698,
 #						0.00115,0.99885,0.00130,0.9987,0.00132,0.99868,0.00162,0.99838,0.00224,0.99776,0.00249,0.99751,0.00311,0.99689,0.00399,0.99601,
 #						0.00136,0.99864,0.00162,0.99838,0.00169,0.99831,0.00167,0.99833,0.00254,0.99746,0.00278,0.99722,0.00369,0.99631,0.00384,0.99616,
 #						0.00133,0.99867,0.00188,0.99812,0.00195,0.99805,0.00181,0.99819,0.00259,0.99741,0.00288,0.99712,0.00393,0.99607,0.00466,0.99534,
 #						0.00179,0.99821,0.00176,0.99824,0.00175,0.99825,0.00181,0.99819,0.00281,0.99719,0.00307,0.99693,0.00386,0.99614,0.00403,0.99597))
-#dim(Defaults_1_model) <- c(2,8,6)
-#dimnames(Defaults_1_model) <- list('Defaults_1'=defaults_level,'LTV_1'=ltv_level,'DTI_1'=dti_level)
-
+#dim(Defaults_1_model) <- c(2,6,8)
+#dimnames(Defaults_1_model) <- list('Defaults_1'=defaults_level,'DTI_1'=dti_level,'LTV_1'=ltv_level)
 
 
 ###specify the node configure
@@ -163,9 +182,9 @@ Income_1 <- new("GRNode_d",name="Income_1",model=list(model=Income_1_model),valu
 Inflation_1 <- new("GRNode_d",name="Inflation_1",model=list(model=Inflation_1_model),values=inflation_level,parents=c(NA,NA),children=c(NA,NA))
 BoERates_1 <- new("GRNode_d",name="BoERates_1",model=list(model=BoERates_1_model),values=boe_level,parents=c(NA,NA),children=c(NA,NA))
 DTI_1 <- new("GRNode_d",name="DTI_1",model=list(model=DTI_1_model),values=dti_level,parents=c(NA,NA),children=c(NA,NA))
-LTV_1 <- new("GRNode_c",name="LTV_1",model=list(model=LTV_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-#Spread_1 <- new("GRNode_d",name="Spread_1",model=list(model=Spread_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
-Defaults_1 <- new("GRNode_c",name="Defaults_1",model=list(model=Defaults_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
+LTV_1 <- new("GRNode_c",name="LTV_1",model=list(model=LTV_1_model),values=ltv_level,parents=c(NA,NA),children=c(NA,NA))
+Spread_1 <- new("GRNode_d",name="Spread_1",model=list(model=Spread_1_model),values=spread_level,parents=c(NA,NA),children=c(NA,NA))
+Defaults_1 <- new("GRNode_c",name="Defaults_1",model=list(model=Defaults_1_model),values=defaults_level,parents=c(NA,NA),children=c(NA,NA))
 
 #Income_2 <- new("GRNode_c",name="Income_2",model=list(model=Income_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 #Inflation_2 <- new("GRNode_c",name="Inflation_2",model=list(model=Inflation_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
@@ -179,14 +198,14 @@ Defaults_1 <- new("GRNode_c",name="Defaults_1",model=list(model=Defaults_1_model
 #[Income_2|BoERates_1][Inflation_2|Income_2][BoERates_2|Inflation_2:Income_2][DTI_2|Income_2:BoERates_2][Spread_2][LTV_2][Defaults_2|DTI_2:LTV_2:Spread_2]"
 
 #networkstring <- "[Spread_1][LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1:Spread_1:LTV_1][Defaults_1|DTI_1:LTV_1]"
-networkstring <- "[LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1][Defaults_1|DTI_1:LTV_1]"
+networkstring <- "[LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][Spread_1][DTI_1|Income_1:BoERates_1:Spread_1][Defaults_1|DTI_1:LTV_1]"
 #networkstring <- "[ALTV][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1][Defaults_1|DTI_1:ALTV]"
 net <- model2network(networkstring)
 
 ###put all the GRNode into one list
 #nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,Spread_1,LTV_1,Defaults_1,Income_2,Inflation_2,BoERates_2,DTI_2,Spread_2,LTV_2,Defaults_2)
 #nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,Spread_1,LTV_1,Defaults_1)
-nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,LTV_1,Defaults_1)
+nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,LTV_1,Defaults_1,Spread_1)
 print(paste('nodes length is ',length(nnodes)))
 ###build the network###
 cgfit <- fit.net.z(nnodes,net)
@@ -418,7 +437,7 @@ net.reactive <- reactive({
 		print('enter building net plot 2 component')
 	#	input$CreateNode
 		input$UpdateNetWork
-		isolate({if(input$NewNodeName!=""&&!is.null(input$weight1)&&!is.na(input$weight1)){
+		isolate({if(input$NewNodeName!=""&&!is.null(input$weight1)&&!is.na(input$weight1)&&!input$ParentNodeList==''){
 			##get the input from ui
 			name <- input$NewNodeName
 			parents <- input$ParentNodeList
@@ -497,9 +516,9 @@ net.reactive <- reactive({
 		print("Render Build Plot") 	
   })
 
-###This is to generate a list includes the label for nodes(which can be added on the fly)
-###So the dynamic UI can reflect the dynamic content in the network it is used in Distribution and Inference Tab
-###It is based on reactive which if input$CreateNode update, it will change automatically.
+####This is to generate a list includes the label for nodes(which can be added on the fly)
+####So the dynamic UI can reflect the dynamic content in the network it is used in Distribution and Inference Tab
+####It is based on reactive which if input$CreateNode update, it will change automatically.
 get.name.reactive<-reactive({
 	var.opts <- namel(colnames(ddd)) ##update here at 15:23
 	if(input$CreateNode){
@@ -619,6 +638,12 @@ output$EnterParam <- renderUI({
 		
 		###leave the simulation later
   })
+
+output$ParentsUI <- renderUI({
+	print(paste0('select parents ui ',colnames(ddd)))
+	checkboxGroupInput("ParentNodeList","Parents",choices = get.name.reactive(),inline = FALSE,selected=input$ParentNodeList)
+	})
+
 
 output$selectUI1 <- renderUI({
 #	nodes.name <- get.name(nnodes)
