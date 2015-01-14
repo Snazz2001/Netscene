@@ -414,7 +414,7 @@ output$distPlot <- renderPlot({ #renderGvis
 					 color_length <- max(dim(ds))
 					 ord <-order(apply(ds,1,sum),decreasing=TRUE)
 					 mosaicplot(ds[ord,],main="Mosaic of the simulated data",color=colorspace::rainbow_hcl(color_length),cex=1.0,xlab=input$ExamineNodeX,ylab=input$ExamineNodeY)
-				} else if(x_type=='d' && y_type=='c'){
+				} else if(x_type=='d' && y_type=='c'){ 
 			#		flm <- paste0('x=',input$ExamineNodeY)
 			#		print(paste('flm is ',flm))
 			#		facet <- paste0(input$ExamineNodeX,'~.')
