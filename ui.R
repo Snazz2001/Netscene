@@ -79,15 +79,16 @@ tabPanel(value=3,"Distributions",
 		h3("GraphRisk Distribution"),
 		br(),br(),
 		h4("Select Plot"),
-		selectInput("ChartChoice",label="Chart Type", choices = c("Scatter Plot","Heat Map","Histogram"), selected="Scatter Plot"),
+	#	selectInput("ChartChoice",label="Chart Type", choices = c("Scatter Plot","Heat Map","Histogram"), selected="Scatter Plot"),
 		h4("Choose Node x-axis"),
 		#uiOutput("ExamineNodeX"),
-		uiOutput("selectUI1"),
+		uiOutput("selectUIDist1"),
 #   		selectInput("ExamineNodeX",label="Examine",choices = node_names, selected="IntGearing"),
 		h4("Choose Node y-axis"),
-		uiOutput("selectUI2"),		
+		uiOutput("selectUIDist2"),		
 #   		selectInput("ExamineNodeY",label="Examine",choices = node_names, selected="vintage"),
-		br()#,
+        actionButton('Plot','Plot')
+		#br()#,
 		#actionButton("Draw","let's go")
 	#	submitButton("Draw")#
 		),
@@ -109,7 +110,7 @@ tabPanel(value=3,"Distributions",
 		htmlOutput("DescriptionButton"),
 #		br(),
   	#	selectInput("EvidenceNode",label="Select Node",choices = get.name(nnodes), selected="hpi"),
-		uiOutput("selectUI3"),
+		uiOutput("selectUIEvid3"),
 		uiOutput("ChooseState"),
 		radioButtons("EnterOrRetract","Action",c("Enter","Retract")),
 		actionButton("Update","Update Evidence")
@@ -120,7 +121,7 @@ tabPanel(value=3,"Distributions",
 		h4("Please input the node of interests:"),
 	#	radioButtons("EnterOrRetract","Action",c("Enter","Retract"))
 	#	,
-		uiOutput("selectUI4"),
+		uiOutput("selectUIEvid4"),
 		actionButton("Inference","Do inference")
 		#submitButton("Submit")#,br(),
 		#textOutput("txt")

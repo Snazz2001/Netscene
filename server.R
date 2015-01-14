@@ -248,9 +248,108 @@ shinyServer(function(input, output,session){
 #})
 # This code defines plot for Distributions tab
 
+#output$distPlot <- renderPlot({ #renderGvis
+#	print (input$ChartChoice)
+#	if ((input$ChartChoice == "Scatter Plot" || input$ChartChoice == "Heat Map") && (length(input$ExamineNodeX)>0)){
+#		###To bin continous variable into different group###
+#		print('scatterplot starts! ')
+#		print(paste0('nodex is ',input$ExamineNodeX))
+#		print(paste0('nodey is ',input$ExamineNodeY))
+#		
+#		x <- get.node.info(nnodes,input$ExamineNodeX)
+#		y <- get.node.info(nnodes,input$ExamineNodeY)#
+
+#		x_type <- x[['type']]
+#		y_type <- y[['type']]#
+
+#		#x_data <- with(ddd,get(input$ExamineNodeX))
+#		#y_data <- with(ddd,get(input$ExamineNodeY))
+#		plot.obj<<-list()
+#		plot.obj$data <<- ddd
+#		print('*************************')
+#		print(head(plot.obj$data))
+#		plot.obj$x <<- with(ddd,get(input$ExamineNodeX))
+#		plot.obj$y <<- with(ddd,get(input$ExamineNodeY))#
+
+#		if(x_type=='c' && y_type=='c'){
+#		g_data<-data.frame(
+#		round(3*ddd[, input$ExamineNodeX],0)/3,
+#		round(3*ddd[, input$ExamineNodeY],0)/3
+#		)
+#		print('1111')
+#		g_dat2<-table(g_data)
+#		g_dat3<-data.frame(col = as.numeric(rep(colnames(g_dat2), each = nrow(g_dat2))), 
+#           		row = as.numeric(rep(rownames(g_dat2), ncol(g_dat2))), 
+#           		value = as.vector(g_dat2))
+#		g_dat4<-data.frame(label=as.character(g_dat3[,"value"]),g_dat3)
+#		g_dat5<-g_dat4[g_dat4$value>0,]
+#		}
+#		print('222')
+#	#	ooo<-gvisBubbleChart(g_dat5,idvar="label",xvar="row",yvar="col",
+#	#		colorvar="value",sizevar="value",
+#	#		options = list (  width=900, height=600,
+#	#	#	sizeAxis= '{minValue: 0,  maxSize: 50}',
+#	#	      gvis.editor = "Edit me!"))#
+
+#		if (input$ChartChoice == "Scatter Plot"){
+#			print("inside the scatterplot to see what variables are in ")
+#			print(get.name(nnodes))
+#			print(paste0('x_type is ',x_type,' y_type is ',y_type))
+#			if (x_type=='c' && y_type=='c'){
+#				sunflowerplot(g_dat3[,1],g_dat3[,2],g_dat3[,3],main="Scatter Plot",
+#				xlab=print(input$ExamineNodeX),ylab=print(input$ExamineNodeY));
+##				y11 <- paste0('x=',input$ExamineNodeX)
+##				y22 <- paste0('y=',input$ExamineNodeY)
+##				ggplot(ddd,aes(eval(parse(text=y11)),eval(parse(text=y22))))+geom_point()
+#			} else if(x_type=='d' && y_type=='d'){
+#				 fmla<-as.formula(paste0('~',input$ExamineNodeX,'+',input$ExamineNodeY))
+#				 mosaic(fmla,ddd,shade=TRUE,legend=TRUE)
+#			} else if(x_type=='d' && y_type=='c'){
+#				flm <- paste0('x=',input$ExamineNodeY)
+#				print(paste('flm is ',flm))
+#				facet <- paste0(input$ExamineNodeX,'~.')
+#				print(paste('00000',flm))
+#				print(paste('1111',"2222"))
+#				print(colnames(plot.obj$data))
+#			#	p<-ggplot(ddd,aes(x=zzz,fill=as.factor(BoeIR)))+geom_density(alpha=.75)+xlab('zzz')	
+#			#	p<-ggplot(plot.obj$data, aes(x=plot.obj$y))+geom_histogram()
+#				p<-ggplot(plot.obj$data,aes(x=plot.obj$y,fill=as.factor(plot.obj$x)))+geom_density(alpha=.75)+xlab(input$ExamineNodeY)				
+#			#	p<-ggplot(ddd,aes(eval(parse(text=flm))))+geom_histogram()+xlab(input$ExamineNodeY)+facet_grid(eval(parse(text=facet)))
+#			#	p <- ggplot(ddd, aes(x=y_data,fill=x_data)) + geom_histogram() + xlab(input$ExamineNodeY) 
+#				print(p)
+#				print('print!!!')
+#			} else {
+#				flm <- paste0('x=',input$ExamineNodeX)
+#				print(paste('flm here is ',flm))
+#				facet <- paste0(input$ExamineNodeY,'~.')
+#				print(paste('2222',flm))
+#				print(paste('3333',facet))
+#			#	p<-ggplot(plot.obj$data, aes(x=plot.obj$x))+geom_histogram()
+#				p<-ggplot(plot.obj$data,aes(x=plot.obj$x,fill=as.factor(plot.obj$y)))+geom_density(alpha=.75)+xlab(input$ExamineNodeX)			
+#			#	p<-ggplot(ddd,aes(eval(parse(text=flm))))+geom_histogram()+xlab(input$ExamineNodeX)+facet_grid(eval(parse(text=facet)))
+#			#	p <- ggplot(ddd, aes(x=x_data,fill=y_data)) + geom_histogram() + xlab(input$ExamineNodeX) 		
+#				print(p)
+#				print('print!!!!!!!')
+#			}
+#		} 
+#		print('3333')
+#		if (input$ChartChoice == "Heat Map" && x_type=='c' && y_type=='c'){
+#			filled.contour(g_dat2,main="Heat Map",
+#				xlab=print(input$ExamineNodeX),ylab=print(input$ExamineNodeY))
+#		}
+#	}
+#			print('444')
+#	if(input$ChartChoice == "Histogram" && x_type=='c'){
+#		plot(hist(ddd[, input$ExamineNodeX]), main="Histogram", xlab=print(input$ExamineNodeX))
+#	}	
+#  })
+
 output$distPlot <- renderPlot({ #renderGvis
-	print (input$ChartChoice)
-	if ((input$ChartChoice == "Scatter Plot" || input$ChartChoice == "Heat Map") && (length(input$ExamineNodeX)>0)){
+#	print (input$ChartChoice)
+	input$Plot
+	isolate({
+#	if ((input$ChartChoice == "Scatter Plot" || input$ChartChoice == "Heat Map") && (length(input$ExamineNodeX)>0)){
+	if (length(input$ExamineNodeX)>0){
 		###To bin continous variable into different group###
 		print('scatterplot starts! ')
 		print(paste0('nodex is ',input$ExamineNodeX))
@@ -262,87 +361,107 @@ output$distPlot <- renderPlot({ #renderGvis
 		x_type <- x[['type']]
 		y_type <- y[['type']]
 
-		#x_data <- with(ddd,get(input$ExamineNodeX))
-		#y_data <- with(ddd,get(input$ExamineNodeY))
 		plot.obj<<-list()
 		plot.obj$data <<- ddd
 		print('*************************')
 		print(head(plot.obj$data))
 		plot.obj$x <<- with(ddd,get(input$ExamineNodeX))
 		plot.obj$y <<- with(ddd,get(input$ExamineNodeY))
+		plot.df <- data.frame(x=with(ddd,get(input$ExamineNodeX)),y=with(ddd,get(input$ExamineNodeY)))
+		#x_data <- with(ddd,get(input$ExamineNodeX))
+		#y_data <- with(ddd,get(input$ExamineNodeY))
+		if(input$ExamineNodeX!=input$ExamineNodeY){
 
-		if(x_type=='c' && y_type=='c'){
-		g_data<-data.frame(
-		round(3*ddd[, input$ExamineNodeX],0)/3,
-		round(3*ddd[, input$ExamineNodeY],0)/3
-		)
-		print('1111')
-		g_dat2<-table(g_data)
-		g_dat3<-data.frame(col = as.numeric(rep(colnames(g_dat2), each = nrow(g_dat2))), 
-           		row = as.numeric(rep(rownames(g_dat2), ncol(g_dat2))), 
-           		value = as.vector(g_dat2))
-		g_dat4<-data.frame(label=as.character(g_dat3[,"value"]),g_dat3)
-		g_dat5<-g_dat4[g_dat4$value>0,]
-		}
-		print('222')
+
+			if(x_type=='c' && y_type=='c'){
+				g_data<-data.frame(
+				round(3*ddd[, input$ExamineNodeX],0)/3,
+				round(3*ddd[, input$ExamineNodeY],0)/3
+				)
+				print('1111')
+				g_dat2<-table(g_data)
+				g_dat3<-data.frame(col = as.numeric(rep(colnames(g_dat2), each = nrow(g_dat2))), 
+           			row = as.numeric(rep(rownames(g_dat2), ncol(g_dat2))), 
+           			value = as.vector(g_dat2))
+				g_dat4<-data.frame(label=as.character(g_dat3[,"value"]),g_dat3)
+				g_dat5<-g_dat4[g_dat4$value>0,]
+			}
+			print('222')
 	#	ooo<-gvisBubbleChart(g_dat5,idvar="label",xvar="row",yvar="col",
 	#		colorvar="value",sizevar="value",
 	#		options = list (  width=900, height=600,
 	#	#	sizeAxis= '{minValue: 0,  maxSize: 50}',
 	#	      gvis.editor = "Edit me!"))
 
-		if (input$ChartChoice == "Scatter Plot"){
-			print("inside the scatterplot to see what variables are in ")
-			print(get.name(nnodes))
-			print(paste0('x_type is ',x_type,' y_type is ',y_type))
-			if (x_type=='c' && y_type=='c'){
-				sunflowerplot(g_dat3[,1],g_dat3[,2],g_dat3[,3],main="Scatter Plot",
-				xlab=print(input$ExamineNodeX),ylab=print(input$ExamineNodeY));
-#				y11 <- paste0('x=',input$ExamineNodeX)
-#				y22 <- paste0('y=',input$ExamineNodeY)
-#				ggplot(ddd,aes(eval(parse(text=y11)),eval(parse(text=y22))))+geom_point()
-			} else if(x_type=='d' && y_type=='d'){
-				 fmla<-as.formula(paste0('~',input$ExamineNodeX,'+',input$ExamineNodeY))
-				 mosaic(fmla,ddd,shade=TRUE,legend=TRUE)
-			} else if(x_type=='d' && y_type=='c'){
-				flm <- paste0('x=',input$ExamineNodeY)
-				print(paste('flm is ',flm))
-				facet <- paste0(input$ExamineNodeX,'~.')
-				print(paste('00000',flm))
-				print(paste('1111',"2222"))
-				print(colnames(plot.obj$data))
-			#	p<-ggplot(ddd,aes(x=zzz,fill=as.factor(BoeIR)))+geom_density(alpha=.75)+xlab('zzz')	
-			#	p<-ggplot(plot.obj$data, aes(x=plot.obj$y))+geom_histogram()
-				p<-ggplot(plot.obj$data,aes(x=plot.obj$y,fill=as.factor(plot.obj$x)))+geom_density(alpha=.75)+xlab(input$ExamineNodeY)				
-			#	p<-ggplot(ddd,aes(eval(parse(text=flm))))+geom_histogram()+xlab(input$ExamineNodeY)+facet_grid(eval(parse(text=facet)))
-			#	p <- ggplot(ddd, aes(x=y_data,fill=x_data)) + geom_histogram() + xlab(input$ExamineNodeY) 
-				print(p)
-				print('print!!!')
-			} else {
-				flm <- paste0('x=',input$ExamineNodeX)
-				print(paste('flm here is ',flm))
-				facet <- paste0(input$ExamineNodeY,'~.')
-				print(paste('2222',flm))
-				print(paste('3333',facet))
-			#	p<-ggplot(plot.obj$data, aes(x=plot.obj$x))+geom_histogram()
-				p<-ggplot(plot.obj$data,aes(x=plot.obj$x,fill=as.factor(plot.obj$y)))+geom_density(alpha=.75)+xlab(input$ExamineNodeX)			
-			#	p<-ggplot(ddd,aes(eval(parse(text=flm))))+geom_histogram()+xlab(input$ExamineNodeX)+facet_grid(eval(parse(text=facet)))
-			#	p <- ggplot(ddd, aes(x=x_data,fill=y_data)) + geom_histogram() + xlab(input$ExamineNodeX) 		
-				print(p)
-				print('print!!!!!!!')
-			}
-		} 
-		print('3333')
-		if (input$ChartChoice == "Heat Map" && x_type=='c' && y_type=='c'){
-			filled.contour(g_dat2,main="Heat Map",
-				xlab=print(input$ExamineNodeX),ylab=print(input$ExamineNodeY))
+#			if (input$ChartChoice == "Scatter Plot"){
+				print("inside the scatterplot to see what variables are in ")
+				print(get.name(nnodes))
+				print(paste0('x_type is ',x_type,' y_type is ',y_type))
+				if (x_type=='c' && y_type=='c'){
+#					sunflowerplot(g_dat3[,1],g_dat3[,2],g_dat3[,3],main="Scatter Plot",
+#					xlab=print(input$ExamineNodeX),ylab=print(input$ExamineNodeY));
+#					p <- ggplot(plot.obj$data,aes(x=plot.obj$x,y=plot.obj$y))+geom_point()+xlab(input$ExamineNodeX)+ylab(input$ExamineNodeY)
+					p <- ggplot(plot.df,aes(x=x,y=y))+geom_point()+xlab(input$ExamineNodeX)+ylab(input$ExamineNodeY)
+					print(p)
+#					y11 <- paste0('x=',input$ExamineNodeX)
+#					y22 <- paste0('y=',input$ExamineNodeY)
+#					ggplot(ddd,aes(eval(parse(text=y11)),eval(parse(text=y22))))+geom_point()
+				} else if(x_type=='d' && y_type=='d'){
+					 #fmla<-as.formula(paste0('~',input$ExamineNodeX,'+',input$ExamineNodeY))
+					 #mosaic(fmla,ddd,shade=TRUE,legend=TRUE)
+					# ds <- table(plot.obj$x,plot.obj$y)
+					 ds <- table(plot.df$x,plot.df$y)
+					 color_length <- max(dim(ds))
+					 ord <-order(apply(ds,1,sum),decreasing=TRUE)
+					 mosaicplot(ds[ord,],main="Mosaic of the simulated data",color=colorspace::rainbow_hcl(color_length),cex=1.0,xlab=input$ExamineNodeX,ylab=input$ExamineNodeY)
+				} else if(x_type=='d' && y_type=='c'){
+			#		flm <- paste0('x=',input$ExamineNodeY)
+			#		print(paste('flm is ',flm))
+			#		facet <- paste0(input$ExamineNodeX,'~.')
+			#		print(paste('00000',flm))
+					print(paste('1111',"2222"))
+			#		print(colnames(plot.obj$data))
+			#		p<-ggplot(ddd,aes(x=zzz,fill=as.factor(BoeIR)))+geom_density(alpha=.75)+xlab('zzz')	
+			#		p<-ggplot(plot.obj$data, aes(x=plot.obj$y))+geom_histogram()
+			#		p<-ggplot(plot.obj$data,aes(x=plot.obj$y,fill=as.factor(plot.obj$x)))+geom_density(alpha=.75)+xlab(input$ExamineNodeY)	
+					#p<-ggplot(plot.obj$data,aes(x=plot.obj$y))+facet_wrap(~plot.obj$x)+geom_histogram(aes(y=..density..))+geom_density(alpha=.75)+xlab(input$ExamineNodeY)
+					p<-ggplot(plot.df,aes(x=y))+facet_wrap(~x)+geom_histogram(aes(y=..density..,fill=..count..))+geom_density(alpha=.75,colour='pink')+xlab(input$ExamineNodeY)
+			#		p<-ggplot(ddd,aes(eval(parse(text=flm))))+geom_histogram()+xlab(input$ExamineNodeY)+facet_grid(eval(parse(text=facet)))
+			#		p <- ggplot(ddd, aes(x=y_data,fill=x_data)) + geom_histogram() + xlab(input$ExamineNodeY) 
+					print(p)
+					print('print!!!')
+				} else {
+					flm <- paste0('x=',input$ExamineNodeX)
+					print(paste('flm here is ',flm))
+					facet <- paste0(input$ExamineNodeY,'~.')
+					print(paste('2222',flm))
+					print(paste('3333',facet))
+			#		p<-ggplot(plot.obj$data, aes(x=plot.obj$x))+geom_histogram()
+			#		p<-ggplot(plot.obj$data,aes(x=plot.obj$x,fill=as.factor(plot.obj$y)))+geom_density(alpha=.75)+xlab(input$ExamineNodeX)			
+					p<-ggplot(plot.df,aes(x=x))+facet_wrap(~y)+geom_histogram(aes(y=..density..,fill=..count..))+geom_density(alpha=.75,colour='pink')+xlab(input$ExamineNodeX)
+			#		p<-ggplot(ddd,aes(eval(parse(text=flm))))+geom_histogram()+xlab(input$ExamineNodeX)+facet_grid(eval(parse(text=facet)))
+			#		p <- ggplot(ddd, aes(x=x_data,fill=y_data)) + geom_histogram() + xlab(input$ExamineNodeX) 		
+					print(p)
+					print('print!!!!!!!')
+				}
+#			print('3333')
+#			if (input$ChartChoice == "Heat Map" && x_type=='c' && y_type=='c'){
+#				filled.contour(g_dat2,main="Heat Map",
+#				xlab=print(input$ExamineNodeX),ylab=print(input$ExamineNodeY))
+#			}
+		}else if(input$ExamineNodeX==input$ExamineNodeY&&x_type=='c'){
+			p<-ggplot(plot.df,aes(x=x))+geom_histogram(aes(y=..density..,fill=..count..))+geom_density(alpha=.75,colour='pink')+xlab(input$ExamineNodeX)
+			print(p)
+		}else{
+			p<-ggplot(plot.df,aes(x=x))+geom_bar()+xlab(input$ExamineNodeX)
+			print(p)
 		}
 	}
-			print('444')
-	if(input$ChartChoice == "Histogram" && x_type=='c'){
-		plot(hist(ddd[, input$ExamineNodeX]), main="Histogram", xlab=print(input$ExamineNodeX))
-	}	
-	
+#	print('444')
+#	if(input$ChartChoice == "Histogram" && x_type=='c'){
+#		plot(hist(ddd[, input$ExamineNodeX]), main="Histogram", xlab=print(input$ExamineNodeX))
+#	}	
+	})
   })
 
 ###In evidence tab, to extract the EvidenceNode type based on the type information in the input$EvidenceNode
@@ -645,7 +764,7 @@ output$ParentsUI <- renderUI({
 	})
 
 
-output$selectUI1 <- renderUI({
+output$selectUIDist1 <- renderUI({
 #	nodes.name <- get.name(nnodes)
 #	print('enter select  UI1')
 	var.opts <- namel(colnames(ddd))
@@ -656,7 +775,7 @@ output$selectUI1 <- renderUI({
 #	selectInput("ExamineNodeX",label="Examine",choices = var.opts, selected="IntGearing")
 })#
 
-output$selectUI2 <- renderUI({
+output$selectUIDist2 <- renderUI({
 #	nodes.name <- get.name(nnodes)
 #	print('enter select  UI1')
 	var.opts <- namel(colnames(ddd))
@@ -666,7 +785,7 @@ output$selectUI2 <- renderUI({
 #	selectInput("ExamineNodeY",label="Examine",choices = namel(get.name(nnodes)), selected="vintage")
 })
 
-output$selectUI3 <- renderUI({
+output$selectUIEvid3 <- renderUI({
 #	nodes.name <- get.name(nnodes)
 #	print('enter select  UI1')
 	var.opts <- namel(colnames(ddd))
@@ -674,6 +793,16 @@ output$selectUI3 <- renderUI({
 #	selectInput("ExamineNodeY",label="Examine",choices = var.opts, selected="vintage")
 	selectInput("EvidenceNode",label="Select Node",choices = get.name.reactive(), selected="DTI_1")
 #	selectInput("EvidenceNode",label="Select Node",choices = namel(get.name(nnodes)), selected="hpi")
+})
+
+output$selectUIEvid4 <- renderUI({
+#	nodes.name <- get.name(nnodes)
+#	print('enter select  UI1')
+	var.opts <- namel(colnames(ddd))
+	print(paste0('select UI4 is working ',colnames(ddd)))
+#	selectInput("ExamineNodeY",label="Examine",choices = var.opts, selected="vintage")
+	selectInput("InterestNode",label="Node of Interests",choices = get.name.reactive(), selected="DefRate")
+#	selectInput("InterestNode",label="Node of Interests",choices = namel(get.name(nnodes)), selected="DefRate")
 })
 
 # Code to deal with entering evidence on Enter Evidence page, need to consider the binary or continuous case separately - zheng
@@ -948,16 +1077,6 @@ sliderInput(inputId = "maximumValue",
 #			
 #			})#
 #		})
-
-output$selectUI4 <- renderUI({
-#	nodes.name <- get.name(nnodes)
-#	print('enter select  UI1')
-	var.opts <- namel(colnames(ddd))
-	print(paste0('select UI4 is working ',colnames(ddd)))
-#	selectInput("ExamineNodeY",label="Examine",choices = var.opts, selected="vintage")
-	selectInput("InterestNode",label="Node of Interests",choices = get.name.reactive(), selected="DefRate")
-#	selectInput("InterestNode",label="Node of Interests",choices = namel(get.name(nnodes)), selected="DefRate")
-})
 
 output$selectUI_RT <- renderUI({
 #	nodes.name <- get.name(nnodes)
