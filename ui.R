@@ -147,7 +147,7 @@ tabPanel(value=3,"Distributions",
   			h4("Reverse Testing"),
   			uiOutput("selectUI_RT"),
   			uiOutput("ChooseTargetState"),
-  			actionButton("Action",'Infere Best configure of All Nodes')
+  			actionButton("Action",'Most Probable States')
   			),#
   		mainPanel(
   			plotOutput("netPlot_RT"),

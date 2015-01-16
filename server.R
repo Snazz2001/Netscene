@@ -76,16 +76,19 @@ result_bin<-list()
 income_level <- c('0','2.5%','5%')
 inflation_level <- c('<1.5%','1.5%-2.5%','>2.5%')
 boe_level <- c('0.5%','1.5%','2.5%')
-spread_level <- c('1%','3%')#new add
+spread_level <- c('1%','2%')#new add
+hpi_level <- c('-10%','0%','10%')#5% 20% 75% LTV->44% 48% 55%
 
 Income_1_model <- matrix(c(0.1,0.8,0.1),ncol=3,dimnames=list(NULL,'Income_1'=income_level))
 Inflation_1_model <- matrix(c(0.9,0.09,0.01,0.1,0.6,0.3,0.01,0.3,0.69),ncol=3,dimnames=list('Inflation_1'=inflation_level,'Income_1'=income_level))
+HPI_1_model <- matrix(c(0.05,0.20,0.75),ncol=3,dimnames=list(NULL,'HPI_1'=hpi_level))
 BoERates_1_model <- c(0.99,0.005,0.005,0.9,0.09,0.01,0.8,0.19,0.01,0.99,0.005,0.005,0.6,0.39,0.01,0.2,0.6,0.2,0.9,0.09,0.01,0.2,0.7,0.1,0.01,0.4,0.59)
 dim(BoERates_1_model) <- c(3,3,3)
 dimnames(BoERates_1_model) <- list('BoERates_1'=boe_level,'Income_1'=income_level,'Inflation_1'=inflation_level)
 Spread_1_model <- matrix(c(0.65,0.35),ncol=2,dimnames=list(NULL,'Spread_1'=spread_level))#new add
 
-LTV_1_model <- list(coef = c("(Intercept)" = 0.4813), sd = 0.2248)
+#LTV_1_model <- list(coef = c("(Intercept)" = 0.4813), sd = 0.2248)
+LTV_1_model <- list(coef = matrix(c(0.4400,0.4813,0.5500),ncol=3,dimnames=list(c("(Intercept)"),NULL)), sd = c(0.2248,0.2248,0.2248))
 #the below is make up number
 ltv_level <-c('<20%','20%-30%','30%-40%','40%-50%','50%-60%','60%-70%','70%-75%','75%+')
 #LTV_1_model <- matrix(c(0.02,0.05,0.09,0.14,0.19,0.2,0.19,0.12),ncol=8,dimnames=list(NULL,'LTV_1'=ltv_level))
@@ -101,31 +104,31 @@ dti_level <- c('<5%','5%-10%','10%-15%','15%-20%','20%-25%','25%+')
 #						0.24,0.18,0.16,0.15,0.14,0.13,
 #						0.20,0.16,0.16,0.16,0.16,0.16))
 
-DTI_1_model <- matrix(c(0.16,0.16,0.16,0.16,0.16,0.20,
-						0.13,0.14,0.15,0.16,0.18,0.24,
-						0.01,0.02,0.04,0.09,0.20,0.64,
-						0.14,0.16,0.18,0.18,0.16,0.18,
-						0.16,0.18,0.14,0.18,0.16,0.18,
-						0.18,0.18,0.16,0.18,0.16,0.14,
-						0.64,0.20,0.09,0.04,0.02,0.01,
-						0.24,0.18,0.16,0.15,0.14,0.13,
-						0.20,0.16,0.16,0.16,0.16,0.16,
-						0.16,0.16,0.16,0.16,0.16,0.20,
-						0.17,0.15,0.16,0.16,0.16,0.20,
-						0.17,0.16,0.15,0.16,0.16,0.20,
-						0.17,0.16,0.16,0.15,0.16,0.20,
-						0.16,0.16,0.16,0.16,0.16,0.20,
-						0.17,0.16,0.16,0.16,0.15,0.20,
-						0.18,0.14,0.16,0.16,0.16,0.20,
-						0.18,0.16,0.14,0.16,0.16,0.20,
-						0.18,0.16,0.16,0.14,0.16,0.20
+DTI_1_model <- matrix(c(0.10934005,0.212965337,0.26596152,0.212965337,0.10934005,0.089427706,
+						0.007597324,0.035993978,0.10934005,0.212965337,0.26596152,0.368141791,
+						0.000089220,0.001028186,0.007597324,0.035993978,0.10934005,0.845951242,
+                        0.114010082,0.217410991,0.265827535,0.208400454,0.104755682,0.089595256,
+                        0.009749629,0.043349392,0.123582843,0.225898624,0.264758077,0.332661435,
+                        0.000166240,0.0017234,0.011455602,0.048823625,0.133420438,0.804410695,
+                        0.118324906,0.22133932,0.265473518,0.204156902,0.100667008,0.090038346,
+                        0.012135265,0.050930353,0.137051678,0.236467934,0.261601594,0.301813177,
+                        0.000286379,0.002696578,0.016280421,0.063022926,0.156427004,0.761286694,
+                        0.00759732,0.03599398,0.10934005,0.21296534,0.26596152,0.36814179,
+                        0.00008922,0.00102819,0.00759732,0.03599398,0.10934005,0.84595124,
+                        0.00000018,0.00000496,0.00008922,0.00102819,0.00759732,0.99128013,
+                        0.00974963,0.04334939,0.12358284,0.22589862,0.26475808,0.33266144,
+                        0.00016624,0.00172340,0.01145560,0.04882363,0.13342044,0.80441070,
+                        0.00000057,0.00001366,0.00021173,0.00210401,0.01340593,0.98426410,
+                        0.01213526,0.05093035,0.13705168,0.23646793,0.26160159,0.30181318,
+                        0.00028638,0.00269658,0.01628042,0.06302293,0.15642700,0.76128669,
+                        0.00000156,0.00003285,0.00044501,0.00386494,0.02152292,0.97413273
 						))
 dim(DTI_1_model) <- c(6,3,3,2)
 dimnames(DTI_1_model) <- list('DTI_1'=dti_level,'BoERates_1'=boe_level,'Income_1'=income_level,'Spread_1'=spread_level)##add Spread_1
 
 ##########
 ###current implementation####
-Defaults_1_model <- list(coef=matrix(c(0.01,0.01,0.01,0.015,0.01,0.018,0.01,0.019,0.01,0.02,0.01,0.02),ncol=6,dimnames=list(c("(Intercept)",'LTV_1'),NULL)),
+Defaults_1_model <- list(coef=matrix(c(0.00,0.4,0.04,0.4,0.1,0.4,0.13,0.4,0.16,0.4,0.18,0.4),ncol=6,dimnames=list(c("(Intercept)",'LTV_1'),NULL)),
 	sd=c(0.01,0.01,0.01,0.01,0.01,0.01))
 
 #dtv_model <- list(coef = matrix(c(1.2, 2.3, 3.4, 4.5), ncol = 2,
@@ -180,6 +183,7 @@ defaults_level <- c('1','0')
 
 Income_1 <- new("GRNode_d",name="Income_1",model=list(model=Income_1_model),values=income_level,parents=c(NA,NA),children=c(NA,NA))
 Inflation_1 <- new("GRNode_d",name="Inflation_1",model=list(model=Inflation_1_model),values=inflation_level,parents=c(NA,NA),children=c(NA,NA))
+HPI_1 <- new("GRNode_d",name="HPI_1",model=list(model=HPI_1_model),values=hpi_level,parents=c(NA,NA),children=c(NA,NA))
 BoERates_1 <- new("GRNode_d",name="BoERates_1",model=list(model=BoERates_1_model),values=boe_level,parents=c(NA,NA),children=c(NA,NA))
 DTI_1 <- new("GRNode_d",name="DTI_1",model=list(model=DTI_1_model),values=dti_level,parents=c(NA,NA),children=c(NA,NA))
 LTV_1 <- new("GRNode_c",name="LTV_1",model=list(model=LTV_1_model),values=ltv_level,parents=c(NA,NA),children=c(NA,NA))
@@ -198,14 +202,14 @@ Defaults_1 <- new("GRNode_c",name="Defaults_1",model=list(model=Defaults_1_model
 #[Income_2|BoERates_1][Inflation_2|Income_2][BoERates_2|Inflation_2:Income_2][DTI_2|Income_2:BoERates_2][Spread_2][LTV_2][Defaults_2|DTI_2:LTV_2:Spread_2]"
 
 #networkstring <- "[Spread_1][LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1:Spread_1:LTV_1][Defaults_1|DTI_1:LTV_1]"
-networkstring <- "[LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][Spread_1][DTI_1|Income_1:BoERates_1:Spread_1][Defaults_1|DTI_1:LTV_1]"
+networkstring <- "[HPI_1][LTV_1|HPI_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][Spread_1][DTI_1|Income_1:BoERates_1:Spread_1][Defaults_1|DTI_1:LTV_1]"
 #networkstring <- "[ALTV][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1][Defaults_1|DTI_1:ALTV]"
 net <- model2network(networkstring)
 
 ###put all the GRNode into one list
 #nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,Spread_1,LTV_1,Defaults_1,Income_2,Inflation_2,BoERates_2,DTI_2,Spread_2,LTV_2,Defaults_2)
 #nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,Spread_1,LTV_1,Defaults_1)
-nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,LTV_1,Defaults_1,Spread_1)
+nnodes <- list(HPI_1,Income_1,Inflation_1,BoERates_1,DTI_1,LTV_1,Defaults_1,Spread_1)
 print(paste('nodes length is ',length(nnodes)))
 ###build the network###
 cgfit <- fit.net.z(nnodes,net)
@@ -361,12 +365,12 @@ output$distPlot <- renderPlot({ #renderGvis
 		x_type <- x[['type']]
 		y_type <- y[['type']]
 
-		plot.obj<<-list()
-		plot.obj$data <<- ddd
+	#	plot.obj<<-list()
+	#	plot.obj$data <<- ddd
 		print('*************************')
-		print(head(plot.obj$data))
-		plot.obj$x <<- with(ddd,get(input$ExamineNodeX))
-		plot.obj$y <<- with(ddd,get(input$ExamineNodeY))
+	#	print(head(plot.obj$data))
+	#	plot.obj$x <<- with(ddd,get(input$ExamineNodeX))
+	#	plot.obj$y <<- with(ddd,get(input$ExamineNodeY))
 		plot.df <- data.frame(x=with(ddd,get(input$ExamineNodeX)),y=with(ddd,get(input$ExamineNodeY)))
 		#x_data <- with(ddd,get(input$ExamineNodeX))
 		#y_data <- with(ddd,get(input$ExamineNodeY))
@@ -401,7 +405,7 @@ output$distPlot <- renderPlot({ #renderGvis
 #					sunflowerplot(g_dat3[,1],g_dat3[,2],g_dat3[,3],main="Scatter Plot",
 #					xlab=print(input$ExamineNodeX),ylab=print(input$ExamineNodeY));
 #					p <- ggplot(plot.obj$data,aes(x=plot.obj$x,y=plot.obj$y))+geom_point()+xlab(input$ExamineNodeX)+ylab(input$ExamineNodeY)
-					p <- ggplot(plot.df,aes(x=x,y=y))+geom_point()+xlab(input$ExamineNodeX)+ylab(input$ExamineNodeY)
+					p <- ggplot(plot.df,aes(x=x,y=y))+geom_point()+geom_density2d()+xlab(input$ExamineNodeX)+ylab(input$ExamineNodeY)
 					print(p)
 #					y11 <- paste0('x=',input$ExamineNodeX)
 #					y22 <- paste0('y=',input$ExamineNodeY)
@@ -431,11 +435,11 @@ output$distPlot <- renderPlot({ #renderGvis
 					print(p)
 					print('print!!!')
 				} else {
-					flm <- paste0('x=',input$ExamineNodeX)
-					print(paste('flm here is ',flm))
-					facet <- paste0(input$ExamineNodeY,'~.')
-					print(paste('2222',flm))
-					print(paste('3333',facet))
+			#		flm <- paste0('x=',input$ExamineNodeX)
+			#		print(paste('flm here is ',flm))
+			#		facet <- paste0(input$ExamineNodeY,'~.')
+			#		print(paste('2222',flm))
+			#		print(paste('3333',facet))
 			#		p<-ggplot(plot.obj$data, aes(x=plot.obj$x))+geom_histogram()
 			#		p<-ggplot(plot.obj$data,aes(x=plot.obj$x,fill=as.factor(plot.obj$y)))+geom_density(alpha=.75)+xlab(input$ExamineNodeX)			
 					p<-ggplot(plot.df,aes(x=x))+facet_wrap(~y)+geom_histogram(aes(y=..density..,fill=..count..))+geom_density(alpha=.75,colour='pink')+xlab(input$ExamineNodeX)
@@ -944,8 +948,17 @@ sliderInput(inputId = "maximumValue",
 				print(paste0("now the evi_string is ",evi_string))
 				print(paste0("the interest node is ",input$InterestNode))
 				eval_string <- paste0('cpdist(cgfit,"',input$InterestNode,'",',evi_string,')')
-				print(eval_string)	
+				print(eval_string)
+				seed <- 1
+				set.seed(seed)
 				result <- eval(parse(text=eval_string))
+				while(dim(result)<500&&seed<30){
+					seed <- seed + 1
+					set.seed(seed)
+					tmp <- eval(parse(text=eval_string))
+					result <-  rbind(result,tmp)
+				}
+
 			#	result <- cpdist(cgfit,input$InterestNode,eval(parse(text=evi_string)))
 			####Need to make sure result has valid value instead of 0.
 				if(nrow(result)>0){
@@ -1001,7 +1014,15 @@ sliderInput(inputId = "maximumValue",
 					print(paste0('evi_string is ',evi_string))
 					eval_string <- paste0('cpdist(cgfit,node=\'',input$InterestNode,'\',evidence=(',evi_string,'))')
 					print(eval_string)
+					seed <- 1
+					set.seed(seed)
 					result <- eval(parse(text=eval_string))
+					while(dim(result)<500&&seed<20){
+						seed <- seed + 1
+						set.seed(seed)
+						tmp <- eval(parse(text=eval_string))
+						result <-  rbind(result,tmp)
+					}
 					print(head(result))
 					p.obj$data <<- result
 					p.obj$x <<- with(result,get(input$InterestNode))
@@ -1102,14 +1123,15 @@ output$selectUI_RT <- renderUI({
   	switch(get.node.info(nnodes,input$TargetNode)[['type']],
   		"c" = c(sliderInput(inputId = "minValue",
                   label = "Start of the data range",
-                  min = round(min(data),4),
+                 # min = round(min(data),4),
+                  min = ifelse(round(min(data),4)>0,round(min(data),4),0),
                   max = round(max(data),4),
                   value = round(median(data),4),
                   step = round((max(data)-min(data))/200,4)
       ),
 sliderInput(inputId = "maxValue",
                   label = "end of the data range",
-                  min = round(min(data),4),
+                  min = ifelse(round(min(data),4)>0,round(min(data),4),0),
                   max = round(max(data),4),
                   value = round(median(data),4),
                   step = round((max(data)-min(data))/200,4)
@@ -1230,7 +1252,15 @@ output$BestConf <- renderTable({
 				eval_string <- paste0('cpdist(cgfit,c("',querynodes,'"),',evi_string,')')
 				print('in best conf')
 				print(eval_string)
+				seed <- 1
+				set.seed(seed)
 				result <- eval(parse(text=eval_string))
+				while(dim(result)<500&&seed<20){
+					seed <- seed + 1
+					set.seed(seed)
+					tmp <- eval(parse(text=eval_string))
+					result <-  rbind(result,tmp)
+				}
 				print(head(result))
 			#   discretize the parents node for plotting purpose, note that since we use discrete variable now, so no need to cut it. the next line need update!
 			#	something goes wrong here!!!
