@@ -73,22 +73,24 @@ result_bin<-list()
 #networkstring <- "[hpi][ltv][dtv|hpi:ltv][vintage|ltv][BoeIR][IntGearing|BoeIR:ltv][Unemp][exog|Unemp:IntGearing][maturity][DefRate|maturity:exog]"
 ###old network ends here###
 
-income_level <- c('0','2.5%','5%')
+income_level <- c('0%','2.5%','5%')
 inflation_level <- c('<1.5%','1.5%-2.5%','>2.5%')
 boe_level <- c('0.5%','1.5%','2.5%')
 spread_level <- c('1%','2%')#new add
 hpi_level <- c('-10%','0%','10%')#5% 20% 75% LTV->44% 48% 55%
 
 Income_1_model <- matrix(c(0.1,0.8,0.1),ncol=3,dimnames=list(NULL,'Income_1'=income_level))
-Inflation_1_model <- matrix(c(0.9,0.09,0.01,0.1,0.6,0.3,0.01,0.3,0.69),ncol=3,dimnames=list('Inflation_1'=inflation_level,'Income_1'=income_level))
+#Inflation_1_model <- matrix(c(0.9,0.09,0.01,0.1,0.6,0.3,0.01,0.3,0.69),ncol=3,dimnames=list('Inflation_1'=inflation_level,'Income_1'=income_level))
+Inflation_1_model <- matrix(c(0.5,0.4,0.1,0.2,0.4,0.4,0.01,0.39,0.6),ncol=3,dimnames=list('Inflation_1'=inflation_level,'Income_1'=income_level))
 HPI_1_model <- matrix(c(0.05,0.20,0.75),ncol=3,dimnames=list(NULL,'HPI_1'=hpi_level))
-BoERates_1_model <- c(0.99,0.005,0.005,0.9,0.09,0.01,0.8,0.19,0.01,0.99,0.005,0.005,0.6,0.39,0.01,0.2,0.6,0.2,0.9,0.09,0.01,0.2,0.7,0.1,0.01,0.4,0.59)
+#BoERates_1_model <- c(0.99,0.005,0.005,0.9,0.09,0.01,0.8,0.19,0.01,0.99,0.005,0.005,0.6,0.39,0.01,0.2,0.6,0.2,0.9,0.09,0.01,0.2,0.7,0.1,0.01,0.4,0.59)
+BoERates_1_model <- c(0.82,0.18,0.00,0.62,0.37,0.01,0.36,0.59,0.05,0.36,0.59,0.05,0.16,0.69,0.15,0.05,0.59,0.36,0.05,0.59,0.36,0.01,0.37,0.62,0.00,0.18,0.82)
 dim(BoERates_1_model) <- c(3,3,3)
 dimnames(BoERates_1_model) <- list('BoERates_1'=boe_level,'Income_1'=income_level,'Inflation_1'=inflation_level)
 Spread_1_model <- matrix(c(0.65,0.35),ncol=2,dimnames=list(NULL,'Spread_1'=spread_level))#new add
 
 #LTV_1_model <- list(coef = c("(Intercept)" = 0.4813), sd = 0.2248)
-LTV_1_model <- list(coef = matrix(c(0.4400,1,0.4813,1,0.5500,1),ncol=3,dimnames=list(c("(Intercept)","HPI_1"),NULL)), sd = c(0.20,0.20,0.20))
+LTV_1_model <- list(coef = matrix(c(0.6600,1,0.6,1,0.5400,1),ncol=3,dimnames=list(c("(Intercept)","HPI_1"),NULL)), sd = c(0.20,0.20,0.20))
 #the below is make up number
 ltv_level <-c('<20%','20%-30%','30%-40%','40%-50%','50%-60%','60%-70%','70%-75%','75%+')
 #LTV_1_model <- matrix(c(0.02,0.05,0.09,0.14,0.19,0.2,0.19,0.12),ncol=8,dimnames=list(NULL,'LTV_1'=ltv_level))
@@ -225,7 +227,7 @@ print(paste0('the name of list from get name method is ',node_names))
 #mean(b$DefRate)
 ## [1] -22.44305
 #plot(density(b$DefRate))
-
+set.seed(120)
 ddd<-rbn(cgfit,n=2000)
 
 
@@ -416,8 +418,9 @@ output$distPlot <- renderPlot({ #renderGvis
 					# ds <- table(plot.obj$x,plot.obj$y)
 					 ds <- table(plot.df$x,plot.df$y)
 					 color_length <- max(dim(ds))
-					 ord <-order(apply(ds,1,sum),decreasing=TRUE)
-					 mosaicplot(ds[ord,],main="Mosaic of the simulated data",color=colorspace::rainbow_hcl(color_length),cex=1.0,xlab=input$ExamineNodeX,ylab=input$ExamineNodeY)
+					# ord <-order(apply(ds,1,sum),decreasing=TRUE)
+					# mosaicplot(ds[ord,],main="Mosaic of the simulated data",color=colorspace::rainbow_hcl(color_length),cex=1.0,xlab=input$ExamineNodeX,ylab=input$ExamineNodeY)
+                                        mosaicplot(ds,main="Mosaic of the simulated data",color=colorspace::rainbow_hcl(color_length),cex=1.0,xlab=input$ExamineNodeX,ylab=input$ExamineNodeY)
 				} else if(x_type=='d' && y_type=='c'){ 
 			#		flm <- paste0('x=',input$ExamineNodeY)
 			#		print(paste('flm is ',flm))
@@ -432,7 +435,9 @@ output$distPlot <- renderPlot({ #renderGvis
 					p<-ggplot(plot.df,aes(x=y))+facet_wrap(~x)+geom_histogram(aes(y=..density..,fill=..count..))+geom_density(alpha=.75,colour='pink')+xlab(input$ExamineNodeY)
 			#		p<-ggplot(ddd,aes(eval(parse(text=flm))))+geom_histogram()+xlab(input$ExamineNodeY)+facet_grid(eval(parse(text=facet)))
 			#		p <- ggplot(ddd, aes(x=y_data,fill=x_data)) + geom_histogram() + xlab(input$ExamineNodeY) 
-					print(p)
+					
+                                        print(p)
+                                        print(ddply(plot.df,'x',function(z) mean(z$y)))
 					print('print!!!')
 				} else {
 			#		flm <- paste0('x=',input$ExamineNodeX)
@@ -457,7 +462,8 @@ output$distPlot <- renderPlot({ #renderGvis
 			p<-ggplot(plot.df,aes(x=x))+geom_histogram(aes(y=..density..,fill=..count..))+geom_density(alpha=.75,colour='pink')+xlab(input$ExamineNodeX)
 			print(p)
 		}else{
-			p<-ggplot(plot.df,aes(x=x))+geom_bar()+xlab(input$ExamineNodeX)
+
+			p<-ggplot(plot.df,aes(x=x))+geom_histogram(aes(y=(..count..)/sum(..count..)))+xlab(input$ExamineNodeX)+ylab('Proportion')
 			print(p)
 		}
 	}
@@ -631,6 +637,7 @@ net.reactive <- reactive({
 				print(net)
 				print(paste('the length of nnodes is ',length(nnodes)))
 				cgfit <<- fit.net.z(nnodes,net)
+                                set.seed(120)
 				ddd<<-rbn(cgfit,n=2000)
 				print('done fit network!!!')
 			}     			
@@ -663,28 +670,51 @@ output$EnterParam <- renderUI({
 			ptypes <- sapply(pnodes_spec,function(x) x$type)
 			pnames <- sapply(pnodes_spec,function(x) x$name)
 			pvalues <- sapply(pnodes_spec,function(x) x$values)
+                        print(paste0('output p values is ',pvalues))
 			textInput("text", label = h3("Text input"), value = "Enter text...") 
 			isStarted <- FALSE
 			if(length(input$ParentNodeList)==2){
-					if(ptypes[1]=='c'&&ptypes[2]=='c'){
+					if(ptypes[1]=='c'&&ptypes[2]=='c'){##continous data is fine.
 						c(numericInput('weight1', label = paste0('Weight for Intercept ',pnames[1]),value = ''),
 							numericInput('weight2', label = paste0('Weight for ',pnames[1]),value = ''),
 						numericInput('weight3', label = paste0('Weight for ',pnames[2]), value = ''),
 						numericInput('weight4', label = 'Standard deviation ', value = ''))
 					}else if(ptypes[1]=='c'&&ptypes[2]=='d'){
-						c(numericInput('weight1', label = paste0('Weight for Intercept under LOW ',pnames[2]), value = ''),
-						numericInput('weight2', label = paste0('Weight for ',pnames[1],' under LOW ',pnames[2]) , value = ''),
-						numericInput('weight3', label =  paste0('Weight for Intercept under High ',pnames[2]), value = ''),
-						numericInput('weight4', label =  paste0('Weight for ',pnames[1],' under HIGH ',pnames[2]), value = ''),
-						numericInput('weight5', label =  paste0('Weight for Standard deviation under LOW ',pnames[2]), value = ''),
-						numericInput('weight6', label =  paste0('Weight for  Standard deviation under HIGH ',pnames[2]), value = ''))
+                                                number_inputs <- c()
+                                                for(i in seq(1:length(pvalues[[2]]))){
+                                                        number_inputs <- c(number_inputs,numericInput(paste0('weight',2*i-1),paste0('Weight for Intercept under ',pnames[2],' ',pvalues[[2]][i]),value = ''),
+                                                                numericInput(paste0('weight',2*i),paste0('Weight for ', pnames[1],' under ',pnames[2],' ',pvalues[[2]][i]),value = ''))
+                                                }
+                                                total_vec <- length(pvalues[[2]])*2
+                                                for(i in seq(1:length(pvalues[[2]]))){
+                                                        number_inputs <- c(number_inputs,numericInput(paste0('weight',total_vec+i),paste0('Weight for Standard deviation under ',pnames[1],' ',pvalues[[2]][i]),value = ''))
+                                                }
+                                                number_inputs
+
+#						c(numericInput('weight1', label = paste0('Weight for Intercept under LOW ',pnames[2]), value = ''),
+#						numericInput('weight2', label = paste0('Weight for ',pnames[1],' under LOW ',pnames[2]) , value = ''),
+#						numericInput('weight3', label =  paste0('Weight for Intercept under High ',pnames[2]), value = ''),
+#						numericInput('weight4', label =  paste0('Weight for ',pnames[1],' under HIGH ',pnames[2]), value = ''),
+#						numericInput('weight5', label =  paste0('Weight for Standard deviation under LOW ',pnames[2]), value = ''),
+#						numericInput('weight6', label =  paste0('Weight for  Standard deviation under HIGH ',pnames[2]), value = ''))
 					}else if(ptypes[1]=='d'&&ptypes[2]=='c'){
-						c(numericInput('weight1', label = paste0('Weight for Intercept under LOW ',pnames[1]), value = ''),
-						numericInput('weight2', label = paste0('Weight for ',pnames[2],' under LOW ',pnames[1]) , value = ''),
-						numericInput('weight3', label =  paste0('Weight for Intercept under High ',pnames[1]), value = ''),
-						numericInput('weight4', label =  paste0('Weight for ',pnames[2],' under HIGH ',pnames[1]), value = ''),
-						numericInput('weight5', label =  paste0('Weight for Standard deviation under LOW ',pnames[1]), value = ''),
-						numericInput('weight6', label =  paste0('Weight for Standard deviation under HIGH ',pnames[1]), value = ''))
+                                                number_inputs <- c()
+                                                for(i in seq(1:length(pvalues[[1]]))){
+                                                        number_inputs <- c(number_inputs,numericInput(paste0('weight',2*i-1),paste0('Weight for Intercept under ',pnames[1],' ',pvalues[[1]][i]),value = ''),
+                                                                numericInput(paste0('weight',2*i),paste0('Weight for ', pnames[2],' under ',pnames[1],' ',pvalues[[1]][i]),value = ''))
+                                                }
+                                               total_vec <- length(pvalues[[1]])*2
+                                                for(i in seq(1:length(pvalues[[1]]))){
+                                                        number_inputs <- c(number_inputs,numericInput(paste0('weight',total_vec+i),paste0('Weight for Standard deviation under ',pnames[1],' ',pvalues[[1]][i]),value = ''))
+                                                }
+                                                number_inputs                                               
+
+#						c(numericInput('weight1', label = paste0('Weight for Intercept under LOW ',pnames[1]), value = ''),
+#						numericInput('weight2', label = paste0('Weight for ',pnames[2],' under LOW ',pnames[1]) , value = ''),
+#						numericInput('weight3', label =  paste0('Weight for Intercept under High ',pnames[1]), value = ''),
+#						numericInput('weight4', label =  paste0('Weight for ',pnames[2],' under HIGH ',pnames[1]), value = ''),
+#						numericInput('weight5', label =  paste0('Weight for Standard deviation under LOW ',pnames[1]), value = ''),
+#						numericInput('weight6', label =  paste0('Weight for Standard deviation under HIGH ',pnames[1]), value = ''))
 					}
 			}else if(length(input$ParentNodeList)==1){
 				if(ptypes[1]=='c'){
@@ -1033,7 +1063,7 @@ sliderInput(inputId = "maximumValue",
 					if(nrow(result)>0){
 						print(head(result))
 						print(int_node)
-						p <- ggplot(p.obj$data,aes(p.obj$x))+geom_histogram()+xlab(int_node)
+						p <- ggplot(p.obj$data,aes(p.obj$x))+geom_histogram(aes(y=(..count..)/sum(..count..)))+xlab(int_node)+ylab('Proportion')
 						print(p)
 						#print('output for d node is ',result)
 						#paste0("output for", input$InterestNode ," is of being ",v, " is around ",round(result,3))
