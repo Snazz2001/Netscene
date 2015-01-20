@@ -83,6 +83,7 @@ Income_1_model <- matrix(c(0.1,0.8,0.1),ncol=3,dimnames=list(NULL,'Income_1'=inc
 #Inflation_1_model <- matrix(c(0.9,0.09,0.01,0.1,0.6,0.3,0.01,0.3,0.69),ncol=3,dimnames=list('Inflation_1'=inflation_level,'Income_1'=income_level))
 Inflation_1_model <- matrix(c(0.5,0.4,0.1,0.2,0.4,0.4,0.01,0.39,0.6),ncol=3,dimnames=list('Inflation_1'=inflation_level,'Income_1'=income_level))
 HPI_1_model <- matrix(c(0.05,0.20,0.75),ncol=3,dimnames=list(NULL,'HPI_1'=hpi_level))
+#HPI_1_model <- matrix(c(0.000,0.20,0.80),ncol=3,dimnames=list(NULL,'HPI_1'=hpi_level))
 #BoERates_1_model <- c(0.99,0.005,0.005,0.9,0.09,0.01,0.8,0.19,0.01,0.99,0.005,0.005,0.6,0.39,0.01,0.2,0.6,0.2,0.9,0.09,0.01,0.2,0.7,0.1,0.01,0.4,0.59)
 BoERates_1_model <- c(0.82,0.18,0.00,0.62,0.37,0.01,0.36,0.59,0.05,0.36,0.59,0.05,0.16,0.69,0.15,0.05,0.59,0.36,0.05,0.59,0.36,0.01,0.37,0.62,0.00,0.18,0.82)
 dim(BoERates_1_model) <- c(3,3,3)
@@ -90,7 +91,7 @@ dimnames(BoERates_1_model) <- list('BoERates_1'=boe_level,'Income_1'=income_leve
 Spread_1_model <- matrix(c(0.65,0.35),ncol=2,dimnames=list(NULL,'Spread_1'=spread_level))#new add
 
 #LTV_1_model <- list(coef = c("(Intercept)" = 0.4813), sd = 0.2248)
-LTV_1_model <- list(coef = matrix(c(0.6600,1,0.6,1,0.5400,1),ncol=3,dimnames=list(c("(Intercept)","HPI_1"),NULL)), sd = c(0.20,0.20,0.20))
+LTV_1_model <- list(coef = matrix(c(0.66,1,0.6,1,0.54,1),ncol=3,dimnames=list(c("(Intercept)","HPI_1"),NULL)), sd = c(0.2,0.2,0.2))
 #the below is make up number
 ltv_level <-c('<20%','20%-30%','30%-40%','40%-50%','50%-60%','60%-70%','70%-75%','75%+')
 #LTV_1_model <- matrix(c(0.02,0.05,0.09,0.14,0.19,0.2,0.19,0.12),ncol=8,dimnames=list(NULL,'LTV_1'=ltv_level))
