@@ -7,6 +7,48 @@ setClass("GRNode_c",
 setClass("GRNode_d",
          representation(name="character",model="list",values="vector",parents="vector",children="vector"))
 
+###add some method to here###
+setGeneric("setValues",function(the_obj,values){
+  standardGeneric("setValues")
+})
+
+setMethod(f="setValues",
+          signature="GRNode_c",
+          definition=function(the_obj,values){
+            the_obj@values <- values
+            return(the_obj)
+          })
+
+setGeneric("getValues",function(the_obj){
+  standardGeneric("getValues")
+})
+
+setMethod(f="getValues",
+          signature="GRNode_c",
+          definition=function(the_obj){
+            return(the_obj@values)
+          })
+
+setGeneric("setName",function(the_obj,name){
+  standardGeneric("setName")
+})
+
+setMethod(f="setName",
+          signature="GRNode_c",
+          definition=function(the_obj,name){
+            the_obj@name <- name
+            return(the_obj)
+          })
+
+setGeneric("getName",function(the_obj){
+  standardGeneric("getName")
+})
+
+setMethod(f="getName",
+          signature="GRNode_c",
+          definition=function(the_obj){
+            return(the_obj@name)
+          })
 #networkstring="[hpi][ltv][dtv|hpi:ltv][vintage|ltv][BoeIR][IntGearing|BoeIR:ltv][Unemp][exog|Unemp:IntGearing][maturity][DefRate|maturity:exog]"
 networkstring <- "[Spread_1][LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1][Defaults_1|DTI_1:LTV_1:Spread_1]
 [Income_2|BoERates_1][Inflation_2|Income_2][BoERates_2|Inflation_2:Income_2][DTI_2|Income_2:BoERates_2][Spread_2][LTV_2][Defaults_2|DTI_2:LTV_2:Spread_2]"
