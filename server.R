@@ -92,7 +92,7 @@ dimnames(BoERates_1_model) <- list('BoERates_1'=boe_level,'Income_1'=income_leve
 Spread_1_model <- matrix(c(0.65,0.35),ncol=2,dimnames=list(NULL,'Spread_1'=spread_level))#new add
 
 #LTV_1_model <- list(coef = c("(Intercept)" = 0.4813), sd = 0.2248)
-LTV_1_model <- list(coef = matrix(c(0.66,1,0.6,1,0.54,1),ncol=3,dimnames=list(c("(Intercept)","HPI_1"),NULL)), sd = c(0.2,0.2,0.2))
+LTV_1_model <- list(coef = matrix(c(0.66,1,0.6,1,0.54,1),ncol=3,dimnames=list(c("(Intercept)","HPI_1"),hpi_level)), sd = c(0.2,0.2,0.2))
 #the below is make up number
 ltv_level <-c('<20%','20%-30%','30%-40%','40%-50%','50%-60%','60%-70%','70%-75%','75%+')
 #LTV_1_model <- matrix(c(0.02,0.05,0.09,0.14,0.19,0.2,0.19,0.12),ncol=8,dimnames=list(NULL,'LTV_1'=ltv_level))
@@ -132,7 +132,7 @@ dimnames(DTI_1_model) <- list('DTI_1'=dti_level,'BoERates_1'=boe_level,'Income_1
 
 ##########
 ###current implementation####
-Defaults_1_model <- list(coef=matrix(c(0.00,0.4,0.04,0.4,0.1,0.4,0.13,0.4,0.16,0.4,0.18,0.4),ncol=6,dimnames=list(c("(Intercept)",'LTV_1'),NULL)),
+Defaults_1_model <- list(coef=matrix(c(0.00,0.4,0.04,0.4,0.1,0.4,0.13,0.4,0.16,0.4,0.18,0.4),ncol=6,dimnames=list(c("(Intercept)",'LTV_1'),dti_level)),
 	sd=c(0.01,0.01,0.01,0.01,0.01,0.01))
 
 #dtv_model <- list(coef = matrix(c(1.2, 2.3, 3.4, 4.5), ncol = 2,
@@ -185,14 +185,14 @@ defaults_level <- c('1','0')
 #Spread_1 <- new("GRNode_c",name="Spread_1",model=list(model=Spread_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 #Defaults_1 <- new("GRNode_c",name="Defaults_1",model=list(model=Defaults_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 
-Income_1 <- new("GRNode_d",name="Income_1",model=list(model=Income_1_model),values=income_level,parents=c(NA,NA),children=c(NA,NA))
-Inflation_1 <- new("GRNode_d",name="Inflation_1",model=list(model=Inflation_1_model),values=inflation_level,parents=c(NA,NA),children=c(NA,NA))
-HPI_1 <- new("GRNode_d",name="HPI_1",model=list(model=HPI_1_model),values=hpi_level,parents=c(NA,NA),children=c(NA,NA))
-BoERates_1 <- new("GRNode_d",name="BoERates_1",model=list(model=BoERates_1_model),values=boe_level,parents=c(NA,NA),children=c(NA,NA))
-DTI_1 <- new("GRNode_d",name="DTI_1",model=list(model=DTI_1_model),values=dti_level,parents=c(NA,NA),children=c(NA,NA))
-LTV_1 <- new("GRNode_c",name="LTV_1",model=list(model=LTV_1_model),values=ltv_level,parents=c(NA,NA),children=c(NA,NA))
-Spread_1 <- new("GRNode_d",name="Spread_1",model=list(model=Spread_1_model),values=spread_level,parents=c(NA,NA),children=c(NA,NA))
-Defaults_1 <- new("GRNode_c",name="Defaults_1",model=list(model=Defaults_1_model),values=defaults_level,parents=c(NA,NA),children=c(NA,NA))
+Income_1 <- new("GRNode_d",name="Income_1",type='d',model=list(model=Income_1_model),values=income_level,parents=c(NA,NA),children=c(NA,NA))
+Inflation_1 <- new("GRNode_d",name="Inflation_1",type='d',model=list(model=Inflation_1_model),values=inflation_level,parents=c(NA,NA),children=c(NA,NA))
+HPI_1 <- new("GRNode_d",name="HPI_1",type='d',model=list(model=HPI_1_model),values=hpi_level,parents=c(NA,NA),children=c(NA,NA))
+BoERates_1 <- new("GRNode_d",name="BoERates_1",type='d',model=list(model=BoERates_1_model),values=boe_level,parents=c(NA,NA),children=c(NA,NA))
+DTI_1 <- new("GRNode_d",name="DTI_1",type='d',model=list(model=DTI_1_model),values=dti_level,parents=c(NA,NA),children=c(NA,NA))
+LTV_1 <- new("GRNode_c",name="LTV_1",type='c',model=list(model=LTV_1_model),values=ltv_level,parents=c(NA,NA),children=c(NA,NA))
+Spread_1 <- new("GRNode_d",name="Spread_1",type='d',model=list(model=Spread_1_model),values=spread_level,parents=c(NA,NA),children=c(NA,NA))
+Defaults_1 <- new("GRNode_c",name="Defaults_1",type='c',model=list(model=Defaults_1_model),values=defaults_level,parents=c(NA,NA),children=c(NA,NA))
 
 #Income_2 <- new("GRNode_c",name="Income_2",model=list(model=Income_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 #Inflation_2 <- new("GRNode_c",name="Inflation_2",model=list(model=Inflation_2_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
@@ -777,6 +777,42 @@ output$EnterParam <- renderUI({
 		})	
 
 	})
+
+output$ListParam <- renderUI({
+        input$EditNode
+        isolate({
+                if(length(input$ParentNodeList)==1){
+                        tmp_var <- get(input$ParentNodeList[1]) #
+                        number_inputs <- c()
+                        if(getType(tmp_var)=='c'){
+                              tmp_coef <- getModel(tmp_var)[[1]]$coef
+                              tmp_sd <- getModel(tmp_var)[[1]]$sd
+                              v_len <- dim(tmp_coef)[1]
+                              h_len <- dim(tmp_coef)[2]
+                              index <- 1
+                              for(i in seq(1,h_len)){
+                                for(j in seq(1,v_len)){
+                                        number_inputs <- c(number_inputs,numericInput(paste0('weight',index),paste0('Weight for ',rownames(tmp_coef)[j],' ',colnames(tmp_coef)[i]),value = tmp_coef[index]))
+                                        index <- index + 1
+                                }
+                         ##       number_inputs <- c(number_inputs,numericInput(paste0('')))       
+                              }
+                              for(i in seq(1,h_len)){
+                                number_inputs <- c(number_inputs,numericInput(paste0('weight',index),paste0('Standard deviation for ',colnames(tmp_coef)[i]),value=tmp_sd[i]))
+                                index <- index + 1
+                              }
+                        }else{
+                              tmp_model <- getModel(tmp_var)[[1]]
+                              for(i in length(tmp_model)){
+                                number_inputs <- c(number_inputs,numericInput(paste0('cp for ',)))###unfinished!!!
+
+                              }
+
+                        }
+                        number_inputs                         
+                }
+        })
+})
 
   output$netPlot_RT <- renderPlot({	
 		###plot the network, note here it is not updated yet. - zheng zhu

@@ -62,6 +62,8 @@ navbarPage("GraphRisk",id=TRUE,
 #	#		submitButton("CreateNode"),br()
 			actionButton("CreateNode","Create Node"),
 			uiOutput("EnterParam"),
+			actionButton("EditNode","Edit Node"),
+			uiOutput("ListParam"),
 			actionButton("UpdateNetWork","Update Network")
 	#	textOutput("txt")
 		),

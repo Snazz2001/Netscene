@@ -3,9 +3,9 @@ require(bnlearn)
 require(ggplot2)
 ###define two type of nodes, continous node and discrete node###
 setClass("GRNode_c",
-         representation(name="character",model="list",values="vector",parents="vector",children="vector"))
+         representation(name="character",type="character",model="list",values="vector",parents="vector",children="vector"))
 setClass("GRNode_d",
-         representation(name="character",model="list",values="vector",parents="vector",children="vector"))
+         representation(name="character",type="character",model="list",values="vector",parents="vector",children="vector"))
 
 ###add some method to here###
 setGeneric("setValues",function(the_obj,values){
@@ -14,6 +14,13 @@ setGeneric("setValues",function(the_obj,values){
 
 setMethod(f="setValues",
           signature="GRNode_c",
+          definition=function(the_obj,values){
+            the_obj@values <- values
+            return(the_obj)
+          })
+
+setMethod(f="setValues",
+          signature="GRNode_d",
           definition=function(the_obj,values){
             the_obj@values <- values
             return(the_obj)
@@ -29,12 +36,59 @@ setMethod(f="getValues",
             return(the_obj@values)
           })
 
+setMethod(f="getValues",
+          signature="GRNode_d",
+          definition=function(the_obj){
+            return(the_obj@values)
+          })
+
+setGeneric("setType",function(the_obj,values){
+  standardGeneric("setType")
+})
+
+setMethod(f="setType",
+          signature="GRNode_c",
+          definition=function(the_obj){
+            the_obj@type <- "c" 
+            return(the_obj)
+          })
+
+setMethod(f="setType",
+          signature="GRNode_d",
+          definition=function(the_obj){
+            the_obj@type <- "d"
+            return(the_obj)
+          })
+
+setGeneric("getType",function(the_obj,values){
+  standardGeneric("getType")
+})
+
+setMethod(f="getType",
+          signature="GRNode_c",
+          definition=function(the_obj){
+            return("c")
+          })
+
+setMethod(f="getType",
+          signature="GRNode_d",
+          definition=function(the_obj){
+            return("d")
+          })
+
 setGeneric("setName",function(the_obj,name){
   standardGeneric("setName")
 })
 
 setMethod(f="setName",
           signature="GRNode_c",
+          definition=function(the_obj,name){
+            the_obj@name <- name
+            return(the_obj)
+          })
+
+setMethod(f="setName",
+          signature="GRNode_d",
           definition=function(the_obj,name){
             the_obj@name <- name
             return(the_obj)
@@ -49,9 +103,51 @@ setMethod(f="getName",
           definition=function(the_obj){
             return(the_obj@name)
           })
+
+setMethod(f="getName",
+          signature="GRNode_d",
+          definition=function(the_obj){
+            return(the_obj@name)
+          })
+
+setGeneric("getModel",function(the_obj){
+  standardGeneric("getModel")
+})
+
+setMethod(f="getModel",
+          signature="GRNode_c",
+          definition=function(the_obj){
+            return(the_obj@model)
+          })
+
+setMethod(f="getModel",
+          signature="GRNode_d",
+          definition=function(the_obj){
+            return(the_obj@model)
+          })
+
+setGeneric("setModel",function(the_obj,model){
+  standardGeneric("setModel")
+})
+
+setMethod(f="setModel",
+          signature="GRNode_c",
+          definition=function(the_obj,model){
+            the_obj@model <- model
+            return(the_obj)
+          })
+
+setMethod(f="setModel",
+          signature="GRNode_d",
+          definition=function(the_obj,model){
+            the_obj@model[[1]] <- model
+            return(the_obj)
+          })
+
+
 #networkstring="[hpi][ltv][dtv|hpi:ltv][vintage|ltv][BoeIR][IntGearing|BoeIR:ltv][Unemp][exog|Unemp:IntGearing][maturity][DefRate|maturity:exog]"
-networkstring <- "[Spread_1][LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1][Defaults_1|DTI_1:LTV_1:Spread_1]
-[Income_2|BoERates_1][Inflation_2|Income_2][BoERates_2|Inflation_2:Income_2][DTI_2|Income_2:BoERates_2][Spread_2][LTV_2][Defaults_2|DTI_2:LTV_2:Spread_2]"
+#networkstring <- "[Spread_1][LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1][Defaults_1|DTI_1:LTV_1:Spread_1]
+#[Income_2|BoERates_1][Inflation_2|Income_2][BoERates_2|Inflation_2:Income_2][DTI_2|Income_2:BoERates_2][Spread_2][LTV_2][Defaults_2|DTI_2:LTV_2:Spread_2]"
 
 ###fit the network based on the configuration###
 fit.net.z=function(nnodes,net){
