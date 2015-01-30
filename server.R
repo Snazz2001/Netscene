@@ -6,7 +6,7 @@ require(Rgraphviz)
 require(vcd)
 require(ggplot2)
 require(stringr)
-require(reshape)
+require(reshape2)##it used to be require(reshape)
 require(plyr)
 #include the definition of the class nodes
 source("C:\\Projects\\BayesianNetwork\\Netscene\\GraphRiskNode_class_z.R")
@@ -803,11 +803,18 @@ output$ListParam <- renderUI({
                               }
                         }else{
                               tmp_model <- getModel(tmp_var)[[1]]
-                              for(i in length(tmp_model)){
-                                number_inputs <- c(number_inputs,numericInput(paste0('cp for ',)))###unfinished!!!
-
+                              tmp_model_df <- melt(tmp_model)
+                              labels <- rep('',dim(tmp_model_df)[1])
+                              print('rep labels')
+                              for(j in 1:(dim(tmp_model_df)[2]-1)){
+                                labels <- paste(labels,colnames(tmp_model_df)[j],'=',tmp_model_df[,j],sep='')
                               }
-
+                              tmp_model_df$labels <- labels
+                              print('assign the labels')
+                              print(head(tmp_model_df))
+                              for(i in 1:dim(tmp_model_df)[1]){
+                                number_inputs <- c(number_inputs,numericInput(paste0('weight',i),paste0('cp for ',tmp_model_df$labels[i]),value=tmp_model_df$value[i]))###unfinished!!!
+                              }
                         }
                         number_inputs                         
                 }
