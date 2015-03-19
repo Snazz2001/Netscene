@@ -74,23 +74,34 @@ result_bin<-list()
 #networkstring <- "[hpi][ltv][dtv|hpi:ltv][vintage|ltv][BoeIR][IntGearing|BoeIR:ltv][Unemp][exog|Unemp:IntGearing][maturity][DefRate|maturity:exog]"
 ###old network ends here###
 
-income_level <- c('0%','2.5%','5%')
+##income_level <- c('0%','2.5%','5%')
+GDP_level <- c('<1.5%','1.5%-2.5%','>2.5%')
+Unemployment_level <- c('<5.5%','5.5%-6.5%','>6.5%')
 inflation_level <- c('<1.5%','1.5%-2.5%','>2.5%')
 boe_level <- c('0.5%','1.5%','2.5%')
 spread_level <- c('1%','2%')#new add
 hpi_level <- c('-10%','0%','10%')#5% 20% 75% LTV->44% 48% 55%
 
-Income_1_model <- matrix(c(0.1,0.8,0.1),ncol=3,dimnames=list(NULL,'Income_1'=income_level))
+#Income_1_model <- matrix(c(0.1,0.8,0.1),ncol=3,dimnames=list(NULL,'Income_1'=income_level))
+GDP_1_model <- matrix(c(0.17,0.66,0.17),ncol=3,dimnames=list(NULL,'GDP_1'=GDP_level))
+Unemployment_1_model <- matrix(c(0,0.63,0.37,0,0.05,0.95,0.99,0.01,0),ncol=3,dimnames=list('Unemployment_1'=Unemployment_level,'GDP_1'=GDP_level))
 #Inflation_1_model <- matrix(c(0.9,0.09,0.01,0.1,0.6,0.3,0.01,0.3,0.69),ncol=3,dimnames=list('Inflation_1'=inflation_level,'Income_1'=income_level))
-Inflation_1_model <- matrix(c(0.5,0.4,0.1,0.2,0.4,0.4,0.01,0.39,0.6),ncol=3,dimnames=list('Inflation_1'=inflation_level,'Income_1'=income_level))
-HPI_1_model <- matrix(c(0.05,0.20,0.75),ncol=3,dimnames=list(NULL,'HPI_1'=hpi_level))
+#Inflation_1_model <- matrix(c(0.5,0.4,0.1,0.2,0.4,0.4,0.01,0.39,0.6),ncol=3,dimnames=list('Inflation_1'=inflation_level,'Income_1'=income_level))
+Inflation_1_model <- matrix(c(1,0,0,0.55,0.4,0.05,0,0.13,0.87),ncol=3,dimnames=list('Inflation_1'=inflation_level,'GDP_1'=GDP_level))
 #HPI_1_model <- matrix(c(0.000,0.20,0.80),ncol=3,dimnames=list(NULL,'HPI_1'=hpi_level))
 #BoERates_1_model <- c(0.99,0.005,0.005,0.9,0.09,0.01,0.8,0.19,0.01,0.99,0.005,0.005,0.6,0.39,0.01,0.2,0.6,0.2,0.9,0.09,0.01,0.2,0.7,0.1,0.01,0.4,0.59)
-BoERates_1_model <- c(0.82,0.18,0.00,0.62,0.37,0.01,0.36,0.59,0.05,0.36,0.59,0.05,0.16,0.69,0.15,0.05,0.59,0.36,0.05,0.59,0.36,0.01,0.37,0.62,0.00,0.18,0.82)
+#BoERates_1_model <- c(0.82,0.18,0.00,0.62,0.37,0.01,0.36,0.59,0.05,0.36,0.59,0.05,0.16,0.69,0.15,0.05,0.59,0.36,0.05,0.59,0.36,0.01,0.37,0.62,0.00,0.18,0.82)
+#dim(BoERates_1_model) <- c(3,3,3)
+#dimnames(BoERates_1_model) <- list('BoERates_1'=boe_level,'Income_1'=income_level,'Inflation_1'=inflation_level)
+BoERates_1_model <- c(0.82,0.18,0.00,0.36,0.59,0.05,0.05,0.59,0.36,0.62,0.37,0.01,0.16,0.69,0.15,0.01,0.37,0.62,0.36,0.59,0.05,0.05,0.59,0.36,0.00,0.18,0.82)
 dim(BoERates_1_model) <- c(3,3,3)
-dimnames(BoERates_1_model) <- list('BoERates_1'=boe_level,'Income_1'=income_level,'Inflation_1'=inflation_level)
+dimnames(BoERates_1_model) <- list('BoERates_1'=boe_level,'Inflation_1'=inflation_level,'GDP_1'=GDP_level)
 Spread_1_model <- matrix(c(0.65,0.35),ncol=2,dimnames=list(NULL,'Spread_1'=spread_level))#new add
-
+#HPI_1_model <- matrix(c(0.05,0.20,0.75),ncol=3,dimnames=list(NULL,'HPI_1'=hpi_level))
+HPI_1_model <- matrix(c(0.3,0.3,0.4,0.3,0.3,0.4,0.3,0.3,0.4,0.3,0.3,0.4,0.3,0.3,0.4,0.3,0.3,0.4,0.3,0.3,0.4,0.3,0.3,0.4,0.3,0.3,0.4))
+dim(HPI_1_model) <- c(3,3,3)
+#,ncol=3,dimnames=list(NULL,'HPI_1'=hpi_level)
+dimnames(HPI_1_model) <- list('HPI_1'=hpi_level,'BoERates_1'=boe_level,'GDP_1'=GDP_level)
 #LTV_1_model <- list(coef = c("(Intercept)" = 0.4813), sd = 0.2248)
 LTV_1_model <- list(coef = matrix(c(0.66,1,0.6,1,0.54,1),ncol=3,dimnames=list(c("(Intercept)","HPI_1"),hpi_level)), sd = c(0.2,0.2,0.2))
 #the below is make up number
@@ -126,14 +137,17 @@ DTI_1_model <- matrix(c(0.10934005,0.212965337,0.26596152,0.212965337,0.10934005
                         0.01213526,0.05093035,0.13705168,0.23646793,0.26160159,0.30181318,
                         0.00028638,0.00269658,0.01628042,0.06302293,0.15642700,0.76128669,
                         0.00000156,0.00003285,0.00044501,0.00386494,0.02152292,0.97413273
-						))
+			))
 dim(DTI_1_model) <- c(6,3,3,2)
-dimnames(DTI_1_model) <- list('DTI_1'=dti_level,'BoERates_1'=boe_level,'Income_1'=income_level,'Spread_1'=spread_level)##add Spread_1
+dimnames(DTI_1_model) <- list('DTI_1'=dti_level,'BoERates_1'=boe_level,'GDP_1'=GDP_level,'Spread_1'=spread_level)##add Spread_1
 
 ##########
 ###current implementation####
-Defaults_1_model <- list(coef=matrix(c(0.00,0.4,0.04,0.4,0.1,0.4,0.13,0.4,0.16,0.4,0.18,0.4),ncol=6,dimnames=list(c("(Intercept)",'LTV_1'),dti_level)),
-	sd=c(0.01,0.01,0.01,0.01,0.01,0.01))
+#Defaults_1_model <- list(coef=matrix(c(0.00,0.4,0.04,0.4,0.1,0.4,0.13,0.4,0.16,0.4,0.18,0.4),ncol=6,dimnames=list(c("(Intercept)",'LTV_1'),dti_level)),
+#	sd=c(0.01,0.01,0.01,0.01,0.01,0.01))
+Defaults_1_model <- list(coef=matrix(c(0.00,0.4,0.04,0.4,0.1,0.4,0.13,0.4,0.16,0.4,0.18,0.4,0.00,0.4,0.04,0.4,0.1,0.4,0.13,0.4,0.16,0.4,0.18,0.4,0.00,0.4,0.04,0.4,0.1,0.4,0.13,0.4,0.16,0.4,0.18,0.4),ncol=18,dimnames=list(c("(Intercept)",'LTV_1'),NULL)),
+        sd=c(0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01))
+
 
 #dtv_model <- list(coef = matrix(c(1.2, 2.3, 3.4, 4.5), ncol = 2,
 #                              dimnames = list(c("(Intercept)", "ltv"), NULL)),
@@ -185,7 +199,9 @@ defaults_level <- c('1','0')
 #Spread_1 <- new("GRNode_c",name="Spread_1",model=list(model=Spread_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 #Defaults_1 <- new("GRNode_c",name="Defaults_1",model=list(model=Defaults_1_model),values=c(-10000,10000),parents=c(NA,NA),children=c(NA,NA))
 
-Income_1 <- new("GRNode_d",name="Income_1",type='d',model=list(model=Income_1_model),values=income_level,parents=c(NA,NA),children=c(NA,NA))
+#Income_1 <- new("GRNode_d",name="Income_1",type='d',model=list(model=Income_1_model),values=income_level,parents=c(NA,NA),children=c(NA,NA))
+GDP_1 <- new("GRNode_d",name="GDP_1",type='d',model=list(model=GDP_1_model),values=GDP_level,parents=c(NA,NA),children=c(NA,NA))
+Unemployment_1 <- new("GRNode_d",name="Unemployment_1",type='d',model=list(model=Unemployment_1_model),values=Unemployment_level,parents=c(NA,NA),children=c(NA,NA))
 Inflation_1 <- new("GRNode_d",name="Inflation_1",type='d',model=list(model=Inflation_1_model),values=inflation_level,parents=c(NA,NA),children=c(NA,NA))
 HPI_1 <- new("GRNode_d",name="HPI_1",type='d',model=list(model=HPI_1_model),values=hpi_level,parents=c(NA,NA),children=c(NA,NA))
 BoERates_1 <- new("GRNode_d",name="BoERates_1",type='d',model=list(model=BoERates_1_model),values=boe_level,parents=c(NA,NA),children=c(NA,NA))
@@ -206,14 +222,15 @@ Defaults_1 <- new("GRNode_c",name="Defaults_1",type='c',model=list(model=Default
 #[Income_2|BoERates_1][Inflation_2|Income_2][BoERates_2|Inflation_2:Income_2][DTI_2|Income_2:BoERates_2][Spread_2][LTV_2][Defaults_2|DTI_2:LTV_2:Spread_2]"
 
 #networkstring <- "[Spread_1][LTV_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1:Spread_1:LTV_1][Defaults_1|DTI_1:LTV_1]"
-networkstring <- "[HPI_1][LTV_1|HPI_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][Spread_1][DTI_1|Income_1:BoERates_1:Spread_1][Defaults_1|DTI_1:LTV_1]"
+#networkstring <- "[HPI_1][LTV_1|HPI_1][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][Spread_1][DTI_1|Income_1:BoERates_1:Spread_1][Defaults_1|DTI_1:LTV_1]"
+networkstring <- "[GDP_1][Unemployment_1|GDP_1][Inflation_1|GDP_1][BoERates_1|Inflation_1:GDP_1][HPI_1|GDP_1:BoERates_1][LTV_1|HPI_1][Spread_1][DTI_1|GDP_1:BoERates_1:Spread_1][Defaults_1|DTI_1:LTV_1:Unemployment_1]"
 #networkstring <- "[ALTV][Income_1][Inflation_1|Income_1][BoERates_1|Inflation_1:Income_1][DTI_1|Income_1:BoERates_1][Defaults_1|DTI_1:ALTV]"
 net <- model2network(networkstring)
 
 ###put all the GRNode into one list
 #nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,Spread_1,LTV_1,Defaults_1,Income_2,Inflation_2,BoERates_2,DTI_2,Spread_2,LTV_2,Defaults_2)
 #nnodes <- list(Income_1,Inflation_1,BoERates_1,DTI_1,Spread_1,LTV_1,Defaults_1)
-nnodes <- list(HPI_1,Income_1,Inflation_1,BoERates_1,DTI_1,LTV_1,Defaults_1,Spread_1)
+nnodes <- list(GDP_1,Unemployment_1,Inflation_1,BoERates_1,HPI_1,DTI_1,LTV_1,Defaults_1,Spread_1)
 print(paste('nodes length is ',length(nnodes)))
 ###build the network###
 cgfit <- fit.net.z(nnodes,net)
@@ -1460,7 +1477,8 @@ output$BestConf <- renderTable({
 #                        total_sample <- 1000000
 #                        set.seed(99)
 #                        sim <<- rbn(cgfit,n=total_sample)
-                        stat <- ddply(sim,c("BoERates_1","HPI_1","Income_1","Inflation_1","Spread_1"),function(x) c(average_risk=mean(x$Defaults_1),probability=dim(x)[1]/total_sample,count=dim(x)[1]))
+#                        stat <- ddply(sim,c("BoERates_1","HPI_1","Income_1","Inflation_1","Spread_1"),function(x) c(average_risk=mean(x$Defaults_1),probability=dim(x)[1]/total_sample,count=dim(x)[1]))
+                         stat <- ddply(sim,c("BoERates_1","HPI_1","GDP_1","Unemployment_1","Inflation_1","Spread_1"),function(x) c(average_risk=mean(x$Defaults_1),probability=dim(x)[1]/total_sample,count=dim(x)[1]))
                         stat <- subset(stat,stat$count>299)##mark suggest to remove the cases less than 300 data points
                         stat$probability <- round(stat$probability,5)
                         stat_final <<- stat[order(stat$average_risk),]
